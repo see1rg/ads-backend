@@ -2,19 +2,19 @@
 ###
 GET http://localhost:8080/get
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 ###
 GET http://localhost:8080/ads/asddsfsdf/comment
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 ###
 POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-   "username": "user",
+   "username": "user@gmail.com",
    "password": "password",
    "firstName":  " asdad",
    "lastName": " asdad",
@@ -33,7 +33,7 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/ads/me
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 ###
 GET http://localhost:8080/users/me
@@ -43,7 +43,7 @@ Authorization: Basic user@gmail.com password
 ###
 PATCH http://localhost:8080/users/me
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 {
   "phone": "33333",
@@ -56,18 +56,18 @@ Authorization: Basic user password
 ###
 GET http://localhost:8080/users/1
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 ###
 GET http://localhost:8080/ads
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 
 ###
 POST http://localhost:8080/users/set_password
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 {
   "newPassword": "password",
@@ -77,7 +77,7 @@ Authorization: Basic user password
 ###
 POST http://localhost:8080/ads
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 {
   "image": "123",
@@ -90,7 +90,7 @@ Authorization: Basic user password
 ###
 GET http://localhost:8080/ads
 Content-Type: application/json
-Authorization: Basic user password
+Authorization: Basic user@gmail.com password
 
 
 
