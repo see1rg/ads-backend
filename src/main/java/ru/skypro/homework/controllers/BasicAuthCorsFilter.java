@@ -1,4 +1,4 @@
-package ru.skypro.homework.controller;
+package ru.skypro.homework.controllers;
 
 
 import org.springframework.stereotype.Component;
@@ -10,6 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Класс BasicAuthCorsFilter выполняет фильтрацию запросов и добавляет необходимый заголовок для поддержки CORS,
+ * разрешая передачу учетных данных при выполнении запросов с других источников.
+ */
 @Component
 public class BasicAuthCorsFilter extends OncePerRequestFilter {
 

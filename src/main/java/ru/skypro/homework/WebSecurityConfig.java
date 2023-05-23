@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class WebSecurityConfig {
 
-  private static final String[] AUTH_WHITELIST = {
+  private static final String[] AUTH_WHITELIST = { //  массив URL-шаблонов, которые разрешены без аутентификации.
     "/swagger-resources/**",
     "/swagger-ui.html",
     "/v3/api-docs",
