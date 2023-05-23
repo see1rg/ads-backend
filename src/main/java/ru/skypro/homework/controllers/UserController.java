@@ -1,9 +1,11 @@
 package ru.skypro.homework.controllers;
 
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.models.User;
@@ -13,9 +15,11 @@ import ru.skypro.homework.models.User;
 @CrossOrigin(value = "http://localhost:3000")
 public class UserController {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/set_password")
-    public ResponseEntity<User> setPassword( @PathVariable String newPassword, Authentication authentication) {
+    public ResponseEntity<String> setPassword( @PathVariable String newPassword, Authentication authentication) {
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
