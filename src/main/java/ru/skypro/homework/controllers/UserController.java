@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.NewPasswordDto;
 import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.models.User;
 import ru.skypro.homework.services.UserService;
 
 @RestController
@@ -42,7 +41,7 @@ public class UserController {
     @PostMapping("/set_password")
     public ResponseEntity<String> setPassword(@RequestBody NewPasswordDto newPassword, Authentication authentication) {
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(
@@ -92,7 +91,7 @@ public class UserController {
             }
     )
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestParam MultipartFile image, Authentication authentication) {
+    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image, Authentication authentication) {
         return ResponseEntity.status(200).build();
     }
 }

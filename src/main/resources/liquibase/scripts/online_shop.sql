@@ -15,7 +15,7 @@ CREATE TABLE users (
 -- Таблица объявлений
 CREATE TABLE ads (
                      id BIGSERIAL PRIMARY KEY,
-                     image VARCHAR(255) NOT NULL,
+                     image BYTEA NOT NULL,
                      price DECIMAL(10, 2),
                      title VARCHAR(255) NOT NULL,
                      author_id BIGINT NOT NULL,
