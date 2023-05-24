@@ -8,9 +8,8 @@ import lombok.Data;
 public class CommentDto {
 
     private Integer id;
-    private String authorImage;
-    private String authorFirstName;
     private String createdAt;
-    private Integer authorId;
     private String text;
+    private String ads;
+    private Integer authorId;
 }

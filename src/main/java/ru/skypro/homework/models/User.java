@@ -1,6 +1,7 @@
 package ru.skypro.homework.models;
 
 import lombok.Data;
+import ru.skypro.homework.dto.Role;
 
 import javax.persistence.*;
 
@@ -16,5 +17,7 @@ public class User {
     private String lastName;
     private String phone;
     private String image;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 }

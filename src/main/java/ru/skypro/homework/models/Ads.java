@@ -13,7 +13,10 @@ public class Ads {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String image;
-    private Integer authorId;
     private BigDecimal price;
     private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User authorId;
 }
