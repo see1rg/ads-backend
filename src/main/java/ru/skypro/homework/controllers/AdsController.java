@@ -68,7 +68,7 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
+    public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -84,7 +84,7 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Integer id) {
+    public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Long id) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -102,7 +102,7 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<AdsDto> updateAds(@RequestBody Ads ads, @PathVariable Integer id) {
+    public ResponseEntity<AdsDto> updateAds(@RequestBody Ads ads, @PathVariable Long id) {
         return ResponseEntity.ok().build();
     }
 
