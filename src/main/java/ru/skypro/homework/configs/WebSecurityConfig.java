@@ -52,7 +52,7 @@ public class WebSecurityConfig {
 //                    .authenticated()
         )
         .cors()
-        .disable()
+        .and()
         .httpBasic(withDefaults());
     return http.build();
   }
