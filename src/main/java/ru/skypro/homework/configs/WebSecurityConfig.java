@@ -48,11 +48,11 @@ public class WebSecurityConfig {
                 authorization
                     .mvcMatchers(AUTH_WHITELIST)
                     .permitAll()
-                    .mvcMatchers("/ads/**", "/users/**")
-                    .authenticated()
+//                    .mvcMatchers("/ads/**", "/users/**")
+//                    .authenticated()
         )
         .cors()
-        .disable()
+        .and()
         .httpBasic(withDefaults());
     return http.build();
   }
