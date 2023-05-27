@@ -4,12 +4,12 @@ import lombok.Data;
 
 
 @Data
-
 public class CommentDto {
 
-    private Integer id;
-    private String createdAt;
+    private Integer author;
+    private String authorImage;
+    private String authorFirstName;
+    private Long createdAt;
+    private Integer pk;
     private String text;
-    private String ads;
-    private Integer authorId;
 }

@@ -6,9 +6,10 @@ import java.math.BigDecimal;
 
 @Data
 public class AdsDto {
-    private Integer id;
+
+    private Long author;
     private String image;
+    private Long pk;
     private BigDecimal price;
     private String title;
-    private Integer authorId;
 }

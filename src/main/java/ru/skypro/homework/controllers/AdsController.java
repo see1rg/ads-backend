@@ -44,13 +44,13 @@ public class AdsController {
             tags = {"Объявления"},
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = AdsDto.class))
+                            @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = AdsDto.class))
                     }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
-    @PostMapping
-    public ResponseEntity<AdsDto> createAds(@RequestBody Ads ads) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AdsDto> addAd(@RequestBody Ads ads,@RequestParam MultipartFile image) {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
