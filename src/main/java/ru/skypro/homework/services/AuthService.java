@@ -1,4 +1,4 @@
-package ru.skypro.homework.service;
+package ru.skypro.homework.services;
 
 import ru.skypro.homework.dto.RegisterReq;
 import ru.skypro.homework.dto.Role;
