@@ -50,7 +50,7 @@ public class AdsController {
             }
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(@RequestBody Ads ads,@RequestParam MultipartFile image) {
+    public ResponseEntity<AdsDto> addAd(@RequestParam MultipartFile image, @RequestParam("properties") Ads ads) {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -120,7 +120,7 @@ public class AdsController {
             }
     )
     @GetMapping("/ads/me")
-    public ResponseEntity<AdsDto> getAdsMe() {
+    public ResponseEntity<AdsDto> getMe() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -138,7 +138,7 @@ public class AdsController {
             }
     )
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam("image") MultipartFile image) {
+    public ResponseEntity<byte[]> updateImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) {
         return ResponseEntity.ok().build();
     }
 }
