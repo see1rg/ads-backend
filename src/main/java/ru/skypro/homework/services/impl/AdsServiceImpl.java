@@ -11,6 +11,7 @@ import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.services.AdsService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,7 +44,7 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public AdsDto getAds(Long id) {
+    public Optional<AdsDto> getAds(Long id) {
         return null;
     }
 

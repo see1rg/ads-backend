@@ -4,14 +4,15 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdsDto;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface AdsService {
 
-    public Collection<AdsDto> getAllAds();
+    public Iterable<AdsDto> getAllAds();
 
     public AdsDto addAd(AdsDto adsDto, MultipartFile image);
 
-    public AdsDto getAds(Long id);
+    public Optional<AdsDto> getAds(Long id);
 
     public void removeAd(Long id);
 
