@@ -50,7 +50,7 @@ public class AdsController {
             }
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(@RequestParam MultipartFile image, @RequestParam("properties") Ads ads) {
+    public ResponseEntity<AdsDto> addAd(@RequestParam("properties") Ads ads, @RequestParam MultipartFile image) {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

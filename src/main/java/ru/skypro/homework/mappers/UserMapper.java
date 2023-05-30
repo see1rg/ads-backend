@@ -10,19 +10,14 @@ import ru.skypro.homework.models.User;
 
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.ERROR)
-// If we want to guarantee that we don't forget to map any target property, we can configure the unmappedTargetPolicy option on our mapper
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-//
-//    @Mapping(target= "image", source = "user", qualifiedByName = "ImageToUser")
-//    UserDto userToUserDto(User user);
-//
-//    User userDtoToUser(UserDto userDto);
-//
-//    @Named("ImageToUser")
-//    public User ImageToUser(UserDto userDto) {
-//        User user = userService.getById(userDto.getUserId()).get();
-//        user.setImageLink(userDto.getImage());
-//        return user;
-//    }
+
+    @Mapping(target = "image", expression = "java(user.getAvatar() != null ? user.getAvatar().getFilePath() : null)")
+    UserDto userToUserDto(User user);
+
+    @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    User userDtoToUser(UserDto userDto);
+
 }

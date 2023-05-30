@@ -23,6 +23,8 @@ public class User {
     private String phone;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToOne(mappedBy = "user")
+    private Avatar avatar;
 
     @Override
     public boolean equals(Object o) {

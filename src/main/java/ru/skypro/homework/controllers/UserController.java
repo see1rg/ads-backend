@@ -21,7 +21,7 @@ import ru.skypro.homework.services.UserService;
 @RequiredArgsConstructor
 @CrossOrigin(value = "http://localhost:3000")
 public class UserController {
-    private final UserService userService;
+//    private final UserService userService;
 
     private PasswordEncoder passwordEncoder;
 

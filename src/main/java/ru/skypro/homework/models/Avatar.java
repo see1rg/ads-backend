@@ -22,6 +22,7 @@ public class Avatar {
     @Lob
     private byte[] preview;
     @OneToOne
+    @JoinColumn(referencedColumnName = "id")
     private User user;
 
     @Override

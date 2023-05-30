@@ -22,22 +22,22 @@ public class CommentController {
 
     @Operation(
             operationId = "getComments",
-            summary =  "Получить комментарии объявления",
+            summary = "Получить комментарии объявления",
             tags = {"Комментарии"},
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "ОК",
                             content = {@Content(
-                                    mediaType =  "*/*",
-                                   schema = @Schema(implementation = CommentDto.class))
+                                    mediaType = "*/*",
+                                    schema = @Schema(implementation = CommentDto.class))
                             }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
 
     @GetMapping("{id}/comments")
-    public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long id){
+    public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -48,20 +48,19 @@ public class CommentController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }),
-                     @ApiResponse(responseCode = "401", description = "Unauthorized")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
     @PostMapping("{id}/comments")
-    public ResponseEntity<CommentDto> postComment(@PathVariable Long id,@Parameter(description = "Необходимо корректно" +
+    public ResponseEntity<CommentDto> postComment(@PathVariable Long id, @Parameter(description = "Необходимо корректно" +
             " заполнить комментарий", example = "Тест"
     ) @RequestBody CommentDto commentDto) {
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
 
     @Operation(
             operationId = "deleteComment",
@@ -72,12 +71,12 @@ public class CommentController {
                             responseCode = "200",
                             description = "Удаляем комментарий ",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }
                     ),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
             }
 
     )
@@ -95,7 +94,7 @@ public class CommentController {
                             responseCode = "200",
                             description = "Изменяемый комментарий ",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }
                     ),
@@ -107,7 +106,4 @@ public class CommentController {
     public ResponseEntity<CommentDto> patchComment(@RequestBody CommentDto commentDto, @PathVariable Long adId, @PathVariable Long commentId) {
         return ResponseEntity.ok().build();
     }
-
-
-
 }

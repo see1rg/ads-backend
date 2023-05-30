@@ -1,5 +1,6 @@
 package ru.skypro.homework.mappers;
 
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -16,6 +17,6 @@ public interface CommentMapper {
     @Mapping(target = "createdAt", source = "createdAt")
     CommentDto commentToCommentDto (Comment comment);
 
-    @Mapping(target = "id", source = "pk")
+    @InheritInverseConfiguration
     Comment commentDtoToComment(CommentDto commentDto);
 }
