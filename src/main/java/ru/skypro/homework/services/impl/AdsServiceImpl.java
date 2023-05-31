@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.repositories.AdsRepository;
@@ -74,6 +74,7 @@ public class AdsServiceImpl implements AdsService {
     public byte[] updateImage(Long id, MultipartFile image) throws IOException {
         log.info("Update image: " + id);
         imageService.saveImage(id, image);
+        log.info("Photo have been saved");
         return image.getBytes();
     }
 }

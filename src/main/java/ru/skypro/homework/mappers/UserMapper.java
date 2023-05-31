@@ -2,10 +2,9 @@ package ru.skypro.homework.mappers;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.dto.UserDto;
+import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.models.User;
 
 @Mapper(componentModel = "spring",

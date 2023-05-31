@@ -12,9 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.NewPasswordDto;
-import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.services.UserService;
+import ru.skypro.homework.dtos.NewPasswordDto;
+import ru.skypro.homework.dtos.UserDto;
 
 @RestController
 @RequestMapping("/users")

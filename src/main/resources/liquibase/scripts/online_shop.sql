@@ -33,22 +33,14 @@ CREATE TABLE comments (
 
 -- Таблица картинок
 CREATE TABLE images (
-                         id BIGSERIAL PRIMARY KEY,
-                         filePath VARCHAR(255),
-                         fileSize BIGINT,
-                         mediaType VARCHAR(255),
-                         preview BYTEA,
-                         ads_id INT,
-                         FOREIGN KEY (ads_id) REFERENCES ads (id)
+                        id SERIAL PRIMARY KEY,
+                        filePath VARCHAR(255),
+                        fileSize BIGINT,
+                        mediaType VARCHAR(255),
+                        preview BYTEA,
+                        user_id INT,
+                        ads_id INT,
+                        FOREIGN KEY (user_id) REFERENCES users (id),
+                        FOREIGN KEY (ads_id) REFERENCES ads (id)
 );
 
--- Таблица аватарок
-CREATE TABLE avatars (
-                       id BIGSERIAL PRIMARY KEY,
-                       filePath VARCHAR(255),
-                       fileSize BIGINT,
-                       mediaType VARCHAR(255),
-                       preview BYTEA,
-                       user_id INT,
-                       FOREIGN KEY (user_id) REFERENCES users (id)
-);

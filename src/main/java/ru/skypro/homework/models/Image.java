@@ -24,9 +24,14 @@ public class Image {
     private String mediaType;
     @Lob
     private byte[] preview;
-    @OneToOne
+    @OneToOne(optional = true)
     @JoinColumn(name = "ads_id", referencedColumnName = "id")
     private Ads ads;
+
+    @OneToOne(optional = true)
+    @JoinColumn(referencedColumnName = "id")
+    private User user;
+
 
     @Override
     public boolean equals(Object o) {

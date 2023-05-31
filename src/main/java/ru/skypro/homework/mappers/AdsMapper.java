@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.models.Ads;
 
 import java.util.Collection;

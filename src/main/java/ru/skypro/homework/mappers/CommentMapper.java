@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
-import ru.skypro.homework.dto.CommentDto;
+import ru.skypro.homework.dtos.CommentDto;
 import ru.skypro.homework.models.Comment;
 
 @Mapper(componentModel = "spring",

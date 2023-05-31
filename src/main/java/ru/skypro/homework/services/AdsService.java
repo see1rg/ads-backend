@@ -1,7 +1,7 @@
 package ru.skypro.homework.services;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.AdsDto;
+import ru.skypro.homework.dtos.AdsDto;
 
 import java.io.IOException;
 import java.util.Optional;
