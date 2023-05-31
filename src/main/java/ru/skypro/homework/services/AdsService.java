@@ -3,14 +3,14 @@ package ru.skypro.homework.services;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dto.AdsDto;
 
-import java.util.Collection;
+import java.io.IOException;
 import java.util.Optional;
 
 public interface AdsService {
 
     public Iterable<AdsDto> getAllAds();
 
-    public AdsDto addAd(AdsDto adsDto, MultipartFile image);
+    public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException;
 
     public Optional<AdsDto> getAds(Long id);
 

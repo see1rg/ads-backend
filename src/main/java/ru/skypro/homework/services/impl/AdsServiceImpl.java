@@ -9,7 +9,9 @@ import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.services.AdsService;
+import ru.skypro.homework.services.ImageService;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -18,9 +20,11 @@ import java.util.Optional;
 @Slf4j
 public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
+    private final ImageService imageService;
 
-    public AdsServiceImpl(AdsRepository adsRepository) {
+    public AdsServiceImpl(AdsRepository adsRepository, ImageService imageService) {
         this.adsRepository = adsRepository;
+        this.imageService = imageService;
     }
 
     @Override
@@ -31,13 +35,10 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public AdsDto addAd(AdsDto adsDto, MultipartFile image) {
+    public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException {
         Ads newAds = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
-
         log.info("Save ads: " + newAds);
-        adsRepository.save(newAds);
-
-//        imageService.saveImage(newAds.getId(),image);
+        imageService.saveImage(newAds.getId(), image);
         log.info("Photo have been saved");
 
         return AdsMapper.INSTANCE.adsToAdsDto(newAds);
