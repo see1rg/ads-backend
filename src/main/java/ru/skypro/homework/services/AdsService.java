@@ -20,6 +20,6 @@ public interface AdsService {
 
     public AdsDto getMe();
 
-    public void updateImage(Long id, MultipartFile image) throws IOException;
+    public byte[] updateImage(Long id, MultipartFile image) throws IOException;
 
 }

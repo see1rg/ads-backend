@@ -11,7 +11,10 @@ import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -70,8 +73,9 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public void updateImage(Long id, MultipartFile image) throws IOException {
+    public byte[] updateImage(Long id, MultipartFile image) throws IOException {
         log.info("Update image: " + id);
         imageService.saveImage(id, image);
+        return image.getBytes();
     }
 }

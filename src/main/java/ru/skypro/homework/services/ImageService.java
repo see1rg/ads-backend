@@ -23,7 +23,7 @@ public class ImageService {
         this.adsRepository = adsRepository;
     }
 
-    public void saveImage(Long id, MultipartFile file) throws IOException {
+    public byte[] saveImage(Long id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to animal {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -34,5 +34,6 @@ public class ImageService {
         imageToSave.setAds(ads);
         imageToSave.setPreview(file.getBytes());
         imageRepository.save(imageToSave);
+        return imageToSave.getPreview();
     }
 }
