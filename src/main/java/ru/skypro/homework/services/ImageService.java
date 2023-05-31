@@ -22,7 +22,7 @@ public class ImageService {
     }
 
     public byte[] saveImage(Long id, MultipartFile file) throws IOException {
-        log.info("Was invoked method to upload photo to animal {}", id);
+        log.info("Was invoked method to upload photo to ads {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }

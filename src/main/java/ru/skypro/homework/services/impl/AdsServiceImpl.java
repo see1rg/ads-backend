@@ -52,9 +52,10 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public void removeAd(Long id) {
+    public boolean removeAd(Long id) {
         log.info("Delete ads: " + id);
         adsRepository.deleteById(id);
+        return false;
     }
 
     @Override

@@ -14,7 +14,7 @@ public interface AdsService {
 
     public Optional<AdsDto> getAds(Long id);
 
-    public void removeAd(Long id);
+    public boolean removeAd(Long id);
 
     public AdsDto updateAds(AdsDto adsDto, Long id);
 
