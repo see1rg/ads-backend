@@ -46,17 +46,22 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public Optional<AdsDto> getAds(Long id) {
-        return null;
+        Ads ads = adsRepository.findById(id);
+        log.info("Get ads: " + ads);
+        return Optional.of(AdsMapper.INSTANCE.adsToAdsDto(ads));
     }
 
     @Override
     public void removeAd(Long id) {
-
+        log.info("Delete ads: " + id);
+        adsRepository.deleteById(id);
     }
 
     @Override
     public AdsDto updateAds(AdsDto adsDto, Long id) {
-        return null;
+        Ads ads = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
+        log.info("Update ads: " + ads);
+        return AdsMapper.INSTANCE.adsToAdsDto(adsRepository.save(ads));
     }
 
     @Override
@@ -65,7 +70,8 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public byte[] updateImage(Long id, MultipartFile image) {
-        return new byte[0];
+    public void updateImage(Long id, MultipartFile image) throws IOException {
+        log.info("Update image: " + id);
+        imageService.saveImage(id, image);
     }
 }

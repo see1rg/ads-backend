@@ -9,4 +9,7 @@ import java.util.List;
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
     @NonNull
     List<Ads> findAll();
+    Ads findById(Long id);
+
+    void deleteById(Long id);
 }

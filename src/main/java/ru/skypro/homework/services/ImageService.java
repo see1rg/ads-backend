@@ -3,18 +3,24 @@ package ru.skypro.homework.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.models.Image;
+import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.repositories.ImageRepository;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 @Slf4j
 public class ImageService {
     private final ImageRepository imageRepository;
+    private final AdsRepository adsRepository;
 
-    public ImageService(ImageRepository imageRepository) {
+    public ImageService(ImageRepository imageRepository, AdsRepository adsRepository) {
         this.imageRepository = imageRepository;
+        this.adsRepository = adsRepository;
     }
 
     public void saveImage(Long id, MultipartFile file) throws IOException {
@@ -22,9 +28,11 @@ public class ImageService {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
-        Image image = new Image();
-        image.setId(id);
-        image.setPreview(file.getBytes());
-        imageRepository.save(image);
+        Ads ads = adsRepository.findById(id);
+        Image imageToSave = new Image();
+        imageToSave.setId(id);
+        imageToSave.setAds(ads);
+        imageToSave.setPreview(file.getBytes());
+        imageRepository.save(imageToSave);
     }
 }
