@@ -11,16 +11,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.AdsDto;
-import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.dtos.AdsDto;
+import ru.skypro.homework.services.AdsService;
 
-import java.util.List;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
 @CrossOrigin(value = "http://localhost:3000")
 public class AdsController {
+
+    private final AdsService adsService;
 
     @Operation(
             operationId = "getAllAds",
@@ -34,8 +36,8 @@ public class AdsController {
             }
     )
     @GetMapping
-    public ResponseEntity<List<AdsDto>> getAllAds() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Iterable<AdsDto>> getAllAds() {
+        return ResponseEntity.ok(adsService.getAllAds());
     }
 
     @Operation(
@@ -44,14 +46,16 @@ public class AdsController {
             tags = {"Объявления"},
             responses = {
                     @ApiResponse(responseCode = "201", description = "Created", content = {
-                            @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = AdsDto.class))
+                            @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class))
                     }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(@RequestBody Ads ads,@RequestParam MultipartFile image) {
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<AdsDto> addAd(@RequestParam("properties") AdsDto ads,
+                                        @RequestParam MultipartFile image) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(adsService.addAd(ads, image));
     }
 
     @Operation(
@@ -69,7 +73,7 @@ public class AdsController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.of(adsService.getAds(id));
     }
 
     @Operation(
@@ -85,7 +89,12 @@ public class AdsController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Long id) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean result = adsService.removeAd(id);
+        if (result) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(
@@ -102,8 +111,8 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<AdsDto> updateAds(@RequestBody Ads ads, @PathVariable Long id) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<AdsDto> updateAds(@RequestBody AdsDto ads, @PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adsService.updateAds(ads, id));
     }
 
     @Operation(
@@ -120,7 +129,7 @@ public class AdsController {
             }
     )
     @GetMapping("/ads/me")
-    public ResponseEntity<AdsDto> getAdsMe() {
+    public ResponseEntity<AdsDto> getMe() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -130,7 +139,8 @@ public class AdsController {
             tags = {"Объявления"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE, schema = @Schema(implementation = AdsDto.class))
+                            @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                                    schema = @Schema(implementation = AdsDto.class))
                     }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
                     @ApiResponse(responseCode = "403", description = "Forbidden"),
@@ -138,7 +148,8 @@ public class AdsController {
             }
     )
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateAdsImage(@PathVariable Integer id, @RequestParam("image") MultipartFile image) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<byte[]> updateImage(@PathVariable Long id,
+                                              @RequestParam("image") MultipartFile image) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(adsService.updateImage(id, image));
     }
 }

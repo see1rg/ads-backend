@@ -2,7 +2,7 @@ package ru.skypro.homework.models;
 
 import lombok.*;
 import org.hibernate.Hibernate;
-import ru.skypro.homework.dto.Role;
+import ru.skypro.homework.dtos.Role;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,6 +23,8 @@ public class User {
     private String phone;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToOne(mappedBy = "user")
+    private Image avatar;
 
     @Override
     public boolean equals(Object o) {

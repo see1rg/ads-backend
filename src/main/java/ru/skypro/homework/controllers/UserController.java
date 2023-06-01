@@ -12,16 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dto.NewPasswordDto;
-import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.services.UserService;
+import ru.skypro.homework.dtos.NewPasswordDto;
+import ru.skypro.homework.dtos.UserDto;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @CrossOrigin(value = "http://localhost:3000")
 public class UserController {
-    private final UserService userService;
+//    private final UserService userService;
 
     private PasswordEncoder passwordEncoder;
 
