@@ -3,17 +3,18 @@ package ru.skypro.homework.services;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.CommentDto;
 
+import java.io.IOException;
 import java.util.List;
 
-@Service
+
 public interface CommentService {
 
-    public List<CommentDto> getComments();
+    public Iterable<CommentDto> getComments();
 
-    public CommentDto postComment();
+    public CommentDto addComment(CommentDto commentDto) throws IOException;
 
-    public void deleteComment();
+    public boolean deleteComment(Long id);
 
-    public CommentDto patchComment();
+    public CommentDto updateComment(CommentDto commentDto, Long id);
 
 }

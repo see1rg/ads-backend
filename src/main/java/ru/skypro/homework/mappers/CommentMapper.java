@@ -8,6 +8,8 @@ import org.mapstruct.factory.Mappers;
 import ru.skypro.homework.dtos.CommentDto;
 import ru.skypro.homework.models.Comment;
 
+import java.util.Collection;
+
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CommentMapper {
@@ -19,4 +21,6 @@ public interface CommentMapper {
 
     @InheritInverseConfiguration
     Comment commentDtoToComment(CommentDto commentDto);
+
+    Collection<CommentDto> commentCollectionToCommentDto(Collection<Comment> commentCollection);
 }
