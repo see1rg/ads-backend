@@ -1,5 +1,6 @@
 package ru.skypro.homework.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,16 +20,11 @@ import java.util.Optional;
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
-
-    public AdsServiceImpl(AdsRepository adsRepository, ImageService imageService, UserRepository userRepository) {
-        this.adsRepository = adsRepository;
-        this.imageService = imageService;
-        this.userRepository = userRepository;
-    }
 
     @Override
     public Collection<AdsDto> getAllAds() {

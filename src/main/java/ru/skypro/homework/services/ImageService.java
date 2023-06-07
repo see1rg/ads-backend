@@ -1,5 +1,6 @@
 package ru.skypro.homework.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,16 +15,11 @@ import java.io.IOException;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ImageService {
     private final ImageRepository imageRepository;
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
-
-    public ImageService(ImageRepository imageRepository, AdsRepository adsRepository, UserRepository userRepository) {
-        this.imageRepository = imageRepository;
-        this.adsRepository = adsRepository;
-        this.userRepository = userRepository;
-    }
 
     public byte[] saveImage(Long id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to ads with id {}", id);
