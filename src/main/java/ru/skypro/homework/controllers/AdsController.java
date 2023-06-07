@@ -9,12 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.services.AdsService;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/ads")
@@ -129,8 +131,8 @@ public class AdsController {
             }
     )
     @GetMapping("/ads/me")
-    public ResponseEntity<AdsDto> getMe() {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Collection<AdsDto>> getMe(Authentication authentication) {
+        return ResponseEntity.ok(adsService.getMe(authentication.getName()));
     }
 
     @Operation(
