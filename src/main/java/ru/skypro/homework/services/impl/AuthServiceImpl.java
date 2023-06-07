@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
 import ru.skypro.homework.services.AuthService;
@@ -43,5 +44,15 @@ public class AuthServiceImpl implements AuthService {
             .roles(role.name())
             .build());
     return true;
+  }
+
+  @Override
+  public boolean changePassword(NewPasswordDto newPasswordDto, String userName) {
+    if (manager.userExists(userName)) {
+      String encodedNewPassword = encoder.encode(newPasswordDto.getNewPassword());
+      manager.changePassword(userName, encodedNewPassword);
+      return true;
+    }
+    return false;
   }
 }

@@ -18,7 +18,7 @@ public interface AdsService {
 
     public AdsDto updateAds(AdsDto adsDto, Long id);
 
-    public AdsDto getMe();
+    public AdsDto getMe(String email);
 
     public byte[] updateImage(Long id, MultipartFile image) throws IOException;
 

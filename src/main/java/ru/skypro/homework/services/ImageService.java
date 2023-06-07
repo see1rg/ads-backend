@@ -44,7 +44,10 @@ public class ImageService {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
-        User user = userRepository.findById(id);
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        User user = userRepository.findById(id).get();
         Image imageToSave = new Image();
         imageToSave.setId(id);
         imageToSave.setUser(user);

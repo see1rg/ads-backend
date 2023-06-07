@@ -8,6 +8,7 @@ import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.repositories.AdsRepository;
+import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
 
@@ -21,10 +22,12 @@ import java.util.Optional;
 public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final ImageService imageService;
+    private final UserRepository userRepository;
 
-    public AdsServiceImpl(AdsRepository adsRepository, ImageService imageService) {
+    public AdsServiceImpl(AdsRepository adsRepository, ImageService imageService, UserRepository userRepository) {
         this.adsRepository = adsRepository;
         this.imageService = imageService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -66,8 +69,11 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public AdsDto getMe() {
-        return null;
+    public AdsDto getMe(String email) {
+        log.info("Get ads: " + email);
+        Long authorId = userRepository.findByEmail(email).get().getId();
+        Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
+        return null; //todo
     }
 
     @Override

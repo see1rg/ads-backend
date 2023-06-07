@@ -34,18 +34,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> getUser() {
-        return null;
+    public Optional<UserDto> getUser(String email) {
+        log.info("Get user: " + email);
+        return  userRepository.findUserByEmailIs(email).map(UserMapper.INSTANCE::userToUserDto);
     }
 
     @Override
     public UserDto updateUser(UserDto user, Long id) {
-        return null;
+        log.info("Update user: " + user);
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        return UserMapper.INSTANCE.userToUserDto(
+                userRepository.save(UserMapper.INSTANCE.userDtoToUser(user))
+        );
     }
 
     @Override
     public byte[] updateUserImage(Long id, MultipartFile image) throws IOException {
         log.info("Update user image: " + id);
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found");
+        }
         return imageService.saveAvatar(id, image);
     }
 }

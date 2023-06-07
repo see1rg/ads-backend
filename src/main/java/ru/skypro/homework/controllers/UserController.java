@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.UserDto;
+import ru.skypro.homework.services.AuthService;
+import ru.skypro.homework.services.UserService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @CrossOrigin(value = "http://localhost:3000")
 public class UserController {
-//    private final UserService userService;
+    private final UserService userService;
+    private final AuthService authService;
 
     private PasswordEncoder passwordEncoder;
 
@@ -39,9 +43,18 @@ public class UserController {
             }
     )
     @PostMapping("/set_password")
-    public ResponseEntity<String> setPassword(@RequestBody NewPasswordDto newPassword, Authentication authentication) {
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<NewPasswordDto> setPassword(@RequestBody NewPasswordDto newPassword, Authentication authentication) {
+        Optional<UserDto> user = userService.getUser(authentication.getName());
+        if (!authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        if (authService.changePassword(newPassword, authentication.getName())) {
+            return ResponseEntity.ok(new NewPasswordDto());
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Operation(
@@ -58,8 +71,8 @@ public class UserController {
             }
     )
     @GetMapping("/me")
-    public ResponseEntity<UserDto> getUser(Authentication authentication) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Optional<UserDto>> getUser(Authentication authentication) {
+        return ResponseEntity.ok(userService.getUser(authentication.getName()));
     }
 
     @Operation(
@@ -78,7 +91,7 @@ public class UserController {
     )
     @PatchMapping("/me")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user, Authentication authentication) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(userService.update(user, authentication.getName()));
     }
 
     @Operation(
