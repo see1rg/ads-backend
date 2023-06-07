@@ -16,6 +16,7 @@ import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.services.AdsService;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/ads")
@@ -130,7 +131,7 @@ public class AdsController {
             }
     )
     @GetMapping("/ads/me")
-    public ResponseEntity<AdsDto> getMe(Authentication authentication) {
+    public ResponseEntity<Collection<AdsDto>> getMe(Authentication authentication) {
         return ResponseEntity.ok(adsService.getMe(authentication.getName()));
     }
 

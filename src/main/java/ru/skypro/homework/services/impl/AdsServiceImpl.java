@@ -43,7 +43,6 @@ public class AdsServiceImpl implements AdsService {
         log.info("Save ads: " + newAds);
         imageService.saveImage(newAds.getId(), image);
         log.info("Photo have been saved");
-
         return AdsMapper.INSTANCE.adsToAdsDto(newAds);
     }
 
@@ -69,11 +68,11 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public AdsDto getMe(String email) {
+    public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
         Long authorId = userRepository.findByEmail(email).get().getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
-        return null; //todo
+        return ads.isEmpty() ? null : AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
     }
 
     @Override

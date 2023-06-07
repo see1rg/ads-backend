@@ -17,7 +17,4 @@ public interface UserService {
 
     public UserDto updateUser(UserDto user, Long id);
 
-    public byte[] updateUserImage(Long id, MultipartFile image) throws IOException;
-
-
 }

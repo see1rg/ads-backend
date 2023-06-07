@@ -39,7 +39,8 @@ public class ImageService {
         return imageToSave.getPreview();
     }
 
-    public byte[] saveAvatar(Long id, MultipartFile file) throws IOException {
+    public byte[] saveAvatar(String email, MultipartFile file) throws IOException {
+        Long id = userRepository.findUserByEmailIs(email).get().getId();
         log.info("Was invoked method to upload photo to user with id {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");

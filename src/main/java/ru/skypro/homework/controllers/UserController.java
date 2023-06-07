@@ -15,8 +15,10 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.services.AuthService;
+import ru.skypro.homework.services.ImageService;
 import ru.skypro.homework.services.UserService;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -26,6 +28,7 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final AuthService authService;
+    private final ImageService imageService;
 
     private PasswordEncoder passwordEncoder;
 
@@ -104,7 +107,9 @@ public class UserController {
             }
     )
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image, Authentication authentication) {
+    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image,
+                                                Authentication authentication) throws IOException {
+        imageService.saveAvatar(authentication.getName(), image);
         return ResponseEntity.status(200).build();
     }
 }
