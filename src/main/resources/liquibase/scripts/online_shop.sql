@@ -3,7 +3,7 @@
 -- changeSet see1rg:1
 -- Таблица пользователей
 CREATE TABLE users (
-                       id BIGSERIAL PRIMARY KEY,
+                       id SERIAL PRIMARY KEY,
                        email VARCHAR(30) NOT NULL,
                        first_name VARCHAR(30) NOT NULL,
                        last_name VARCHAR(30) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE users (
 
 -- Таблица объявлений
 CREATE TABLE ads (
-                     id BIGSERIAL PRIMARY KEY,
+                     id SERIAL PRIMARY KEY,
                      price DECIMAL(10, 2),
                      title VARCHAR(255) NOT NULL,
                      author_id BIGINT NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE ads (
 
 -- Таблица комментариев
 CREATE TABLE comments (
-                          id BIGSERIAL PRIMARY KEY,
+                          id SERIAL PRIMARY KEY,
                           created_at TIMESTAMP NOT NULL,
                           text VARCHAR(255) NOT NULL,
                           ads_id BIGINT NOT NULL,

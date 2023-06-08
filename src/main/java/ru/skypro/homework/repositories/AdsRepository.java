@@ -6,14 +6,15 @@ import ru.skypro.homework.models.Ads;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface AdsRepository extends JpaRepository<Ads, Integer> {
     @NonNull
     List<Ads> findAll();
 
-    Ads findById(Long id);
+    Optional<Ads> findById(Integer id);
 
-    void deleteById(Long id);
+    void deleteById(Integer id);
 
-    Collection<Ads> findAllByAuthorId(Long authorId); //todo
+    Collection<Ads> findAllByAuthorId(Integer authorId);
 }

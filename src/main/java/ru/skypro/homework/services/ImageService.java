@@ -21,12 +21,12 @@ public class ImageService {
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
 
-    public byte[] saveImage(Long id, MultipartFile file) throws IOException {
+    public byte[] saveImage(Integer id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to ads with id {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
-        Ads ads = adsRepository.findById(id);
+        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         Image imageToSave = new Image();
         imageToSave.setId(id);
         imageToSave.setAds(ads);
@@ -36,7 +36,7 @@ public class ImageService {
     }
 
     public byte[] saveAvatar(String email, MultipartFile file) throws IOException {
-        Long id = userRepository.findUserByEmailIs(email).get().getId();
+        Integer id = userRepository.findUserByEmailIs(email).get().getId();
         log.info("Was invoked method to upload photo to user with id {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");

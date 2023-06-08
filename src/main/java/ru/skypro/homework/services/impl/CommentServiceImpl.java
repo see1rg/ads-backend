@@ -14,7 +14,6 @@ import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @Transactional
@@ -26,28 +25,28 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     @Override
-    public Collection<CommentDto> getComments(Long id) {
+    public Collection<CommentDto> getComments(Integer id) {
         Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
         log.info("Get all comments for ad: " + id);
         return CommentMapper.INSTANCE.commentCollectionToCommentDto(comments);
     }
 
     @Override
-    public CommentDto addComment(Long id, CommentDto commentDto, Authentication authentication) {
-        if (!adsRepository.existsById(Math.toIntExact(id))) {
+    public CommentDto addComment(Integer id, CommentDto commentDto, Authentication authentication) {
+        if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ad not found");
         }
         Comment newComment = CommentMapper.INSTANCE.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
-        newComment.setAds(adsRepository.findById(Math.toIntExact(id)).get());
+        newComment.setAds(adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ad not found")));
         newComment.setAuthorId(userRepository.findByEmail(authentication.getName()));
         commentRepository.save(newComment);
         return CommentMapper.INSTANCE.commentToCommentDto(newComment);
     }
 
     @Override
-    public boolean deleteComment(Long adId, Long id) {
-        if (!adsRepository.existsById(Math.toIntExact(id))) {
+    public boolean deleteComment(Integer adId, Integer id) {
+        if (!adsRepository.existsById(adId)) {
             throw new IllegalArgumentException("Ad not found");
         }
         log.info("Delete comment: " + id);
@@ -56,8 +55,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateComment(Long adId, CommentDto commentDto, Long id, Authentication authentication) {
-        if (!adsRepository.existsById(Math.toIntExact(id))) {
+    public CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) {
+        if (!adsRepository.existsById(adId)) {
             throw new IllegalArgumentException("Ad not found");
         }
         Comment comment = CommentMapper.INSTANCE.commentDtoToComment(commentDto);

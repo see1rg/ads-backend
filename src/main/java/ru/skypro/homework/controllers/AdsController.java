@@ -74,7 +74,7 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Long id) {
+    public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
         return ResponseEntity.of(adsService.getAds(id));
     }
 
@@ -90,7 +90,7 @@ public class AdsController {
             }
     )
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Long id) {
+    public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Integer id) {
         boolean result = adsService.removeAd(id);
         if (result) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -113,7 +113,7 @@ public class AdsController {
             }
     )
     @PatchMapping("/{id}")
-    public ResponseEntity<AdsDto> updateAds(@RequestBody AdsDto ads, @PathVariable Long id) {
+    public ResponseEntity<AdsDto> updateAds(@RequestBody AdsDto ads, @PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(adsService.updateAds(ads, id));
     }
 
@@ -150,7 +150,7 @@ public class AdsController {
             }
     )
     @PatchMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<byte[]> updateImage(@PathVariable Long id,
+    public ResponseEntity<byte[]> updateImage(@PathVariable Integer id,
                                               @RequestParam("image") MultipartFile image) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(adsService.updateImage(id, image));
     }

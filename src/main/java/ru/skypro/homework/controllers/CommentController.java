@@ -14,7 +14,6 @@ import ru.skypro.homework.dtos.CommentDto;
 import ru.skypro.homework.services.CommentService;
 
 import java.io.IOException;
-import java.util.List;
 
 
 @RestController
@@ -42,7 +41,7 @@ public class CommentController {
     )
 
     @GetMapping("{id}/comments")
-    public ResponseEntity<Iterable<CommentDto>> getComments(@PathVariable Long id) {
+    public ResponseEntity<Iterable<CommentDto>> getComments(@PathVariable Integer id) {
         return ResponseEntity.ok(commentService.getComments(id));
     }
 
@@ -60,7 +59,7 @@ public class CommentController {
             }
     )
     @PostMapping("{id}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Long id, @Parameter(description = "Необходимо корректно" +
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @Parameter(description = "Необходимо корректно" +
             " заполнить комментарий", example = "Тест"
     ) @RequestBody CommentDto commentDto, Authentication authentication) throws IOException {
 
@@ -86,7 +85,7 @@ public class CommentController {
 
     )
     @DeleteMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long adId, @PathVariable Long commentId) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         boolean result = commentService.deleteComment(adId, commentId);
         if (result) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -113,8 +112,9 @@ public class CommentController {
             }
     )
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto, @PathVariable Long adId,
-                                                    @PathVariable Long commentId, Authentication authentication) throws IOException {
+    public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto, @PathVariable Integer adId,
+                                                    @PathVariable Integer commentId,
+                                                    Authentication authentication) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(adId, commentDto,
                 commentId, authentication));
     }

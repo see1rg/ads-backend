@@ -43,21 +43,21 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public Optional<AdsDto> getAds(Long id) {
-        Ads ads = adsRepository.findById(id);
+    public Optional<AdsDto> getAds(Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         log.info("Get ads: " + ads);
         return Optional.of(AdsMapper.INSTANCE.adsToAdsDto(ads));
     }
 
     @Override
-    public boolean removeAd(Long id) {
+    public boolean removeAd(Integer id) {
         log.info("Delete ads: " + id);
         adsRepository.deleteById(id);
         return false;
     }
 
     @Override
-    public AdsDto updateAds(AdsDto adsDto, Long id) {
+    public AdsDto updateAds(AdsDto adsDto, Integer id) {
         Ads ads = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
         log.info("Update ads: " + ads);
         return AdsMapper.INSTANCE.adsToAdsDto(adsRepository.save(ads));
@@ -66,13 +66,13 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
-        Long authorId = userRepository.findByEmail(email).getId();
+        Integer authorId = userRepository.findByEmail(email).getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
         return ads.isEmpty() ? null : AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
     }
 
     @Override
-    public byte[] updateImage(Long id, MultipartFile image) throws IOException {
+    public byte[] updateImage(Integer id, MultipartFile image) throws IOException {
         log.info("Update image: " + id);
         imageService.saveImage(id, image);
         log.info("Photo have been saved");

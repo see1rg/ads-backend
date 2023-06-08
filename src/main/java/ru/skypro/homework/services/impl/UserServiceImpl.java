@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto user, Long id) {
+    public UserDto updateUser(UserDto user, Integer id) {
         log.info("Update user: " + user);
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found");

@@ -18,7 +18,7 @@ import java.util.Objects;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String filePath;
     private long fileSize;
     private String mediaType;

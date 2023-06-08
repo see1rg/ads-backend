@@ -10,12 +10,12 @@ import java.util.List;
 
 public interface CommentService {
 
-    public Iterable<CommentDto> getComments(Long id);
+    Iterable<CommentDto> getComments(Integer id);
 
-    public CommentDto addComment(Long id, CommentDto commentDto, Authentication authentication) throws IOException;
+    CommentDto addComment(Integer id, CommentDto commentDto, Authentication authentication) throws IOException;
 
-    public boolean deleteComment(Long adId, Long id);
+    boolean deleteComment(Integer adId, Integer id);
 
-    public CommentDto updateComment(Long adId, CommentDto commentDto, Long id, Authentication authentication) throws IOException;
+    CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) throws IOException;
 
 }
