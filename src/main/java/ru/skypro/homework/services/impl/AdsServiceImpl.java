@@ -66,7 +66,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
-        Long authorId = userRepository.findByEmail(email).get().getId();
+        Long authorId = userRepository.findByEmail(email).getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
         return ads.isEmpty() ? null : AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
     }
