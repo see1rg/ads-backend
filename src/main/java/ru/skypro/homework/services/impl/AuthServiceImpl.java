@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
+import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.services.AuthService;
 
 @Slf4j

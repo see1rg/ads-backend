@@ -75,7 +75,7 @@ public class AdsController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
-        return ResponseEntity.of(adsService.getAds(id));
+        return ResponseEntity.ok(adsService.getAds(id));
     }
 
     @Operation(

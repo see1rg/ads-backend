@@ -23,12 +23,13 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public Collection<CommentDto> getComments(Integer id) {
         Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
         log.info("Get all comments for ad: " + id);
-        return CommentMapper.INSTANCE.commentCollectionToCommentDto(comments);
+        return commentMapper.commentCollectionToCommentDto(comments);
     }
 
     @Override
@@ -36,12 +37,13 @@ public class CommentServiceImpl implements CommentService {
         if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ad not found");
         }
-        Comment newComment = CommentMapper.INSTANCE.commentDtoToComment(commentDto);
+        Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
-        newComment.setAds(adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ad not found")));
+        newComment.setAds(adsRepository.findById(id).orElseThrow(()
+                -> new IllegalArgumentException("Ad not found")));
         newComment.setAuthorId(userRepository.findByEmail(authentication.getName()));
         commentRepository.save(newComment);
-        return CommentMapper.INSTANCE.commentToCommentDto(newComment);
+        return commentMapper.commentToCommentDto(newComment);
     }
 
     @Override
@@ -59,9 +61,9 @@ public class CommentServiceImpl implements CommentService {
         if (!adsRepository.existsById(adId)) {
             throw new IllegalArgumentException("Ad not found");
         }
-        Comment comment = CommentMapper.INSTANCE.commentDtoToComment(commentDto);
+        Comment comment = commentMapper.commentDtoToComment(commentDto);
         comment.setAuthorId(userRepository.findByEmail(authentication.getName()));
         log.info("Update comment: " + comment);
-        return CommentMapper.INSTANCE.commentToCommentDto(commentRepository.save(comment));
+        return commentMapper.commentToCommentDto(commentRepository.save(comment));
     }
 }

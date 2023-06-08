@@ -13,7 +13,7 @@ public interface AdsService {
 
     AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException;
 
-    Optional<AdsDto> getAds(Integer id);
+    AdsDto getAds(Integer id);
 
     boolean removeAd(Integer id);
 

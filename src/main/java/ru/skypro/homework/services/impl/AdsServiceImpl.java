@@ -15,6 +15,7 @@ import ru.skypro.homework.services.ImageService;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,28 +26,29 @@ public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
+    private final AdsMapper adsMapper;
 
     @Override
     public Collection<AdsDto> getAllAds() {
         Collection<Ads> ads = adsRepository.findAll();
         log.info("Get all ads: " + ads);
-        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
     public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException {
-        Ads newAds = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
+        Ads newAds = adsMapper.adsDtoToAds(adsDto);
         log.info("Save ads: " + newAds);
         imageService.saveImage(newAds.getId(), image);
         log.info("Photo have been saved");
-        return AdsMapper.INSTANCE.adsToAdsDto(newAds);
+        return adsMapper.adsToAdsDto(newAds);
     }
 
     @Override
-    public Optional<AdsDto> getAds(Integer id) {
+    public AdsDto getAds(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         log.info("Get ads: " + ads);
-        return Optional.of(AdsMapper.INSTANCE.adsToAdsDto(ads));
+        return adsMapper.adsToAdsDto(ads);
     }
 
     @Override
@@ -58,9 +60,9 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public AdsDto updateAds(AdsDto adsDto, Integer id) {
-        Ads ads = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
+        Ads ads = adsMapper.adsDtoToAds(adsDto);
         log.info("Update ads: " + ads);
-        return AdsMapper.INSTANCE.adsToAdsDto(adsRepository.save(ads));
+        return adsMapper.adsToAdsDto(adsRepository.save(ads));
     }
 
     @Override
@@ -68,7 +70,7 @@ public class AdsServiceImpl implements AdsService {
         log.info("Get ads: " + email);
         Integer authorId = userRepository.findByEmail(email).getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
-        return ads.isEmpty() ? null : AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
