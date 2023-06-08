@@ -15,8 +15,6 @@ import ru.skypro.homework.services.ImageService;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -54,8 +52,11 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public boolean removeAd(Integer id) {
         log.info("Delete ads: " + id);
+        if (!adsRepository.existsById(id)) {
+            return false;
+        }
         adsRepository.deleteById(id);
-        return false;
+        return true;
     }
 
     @Override

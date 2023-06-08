@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public boolean deleteComment(Integer adId, Integer id) {
         if (!adsRepository.existsById(adId)) {
-            throw new IllegalArgumentException("Ad not found");
+            return false;
         }
         log.info("Delete comment: " + id);
         commentRepository.deleteById(id);
