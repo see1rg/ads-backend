@@ -1,25 +1,20 @@
 package ru.skypro.homework.services;
 
+
 import org.springframework.stereotype.Service;
-import ru.skypro.homework.dto.UserDto;
-import ru.skypro.homework.models.User;
-import ru.skypro.homework.repositories.UserRepository;
+import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dtos.UserDto;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
-public class UserService {
-    private UserRepository userRepository;
+public interface UserService {
 
-//    public UserDto update(UserDto user, String email) {
-//
-//    }
-//
-//    public void updateUserImage() {
-//
-//    }
-//
-//    public UserDto getUser(String email) {
-//
-//    }
+    public UserDto update(UserDto user, String email);
 
+    public Optional<UserDto> getUser(String name);
+
+    public UserDto updateUser(UserDto user, Long id);
 
 }

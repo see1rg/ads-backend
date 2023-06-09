@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.skypro.homework.dto.CommentDto;
+import ru.skypro.homework.dtos.CommentDto;
+import ru.skypro.homework.services.CommentService;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -20,48 +22,49 @@ import java.util.List;
 @CrossOrigin(value = "http://localhost:3000")
 public class CommentController {
 
+    private final CommentService commentService;
+
     @Operation(
             operationId = "getComments",
-            summary =  "Получить комментарии объявления",
+            summary = "Получить комментарии объявления",
             tags = {"Комментарии"},
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "ОК",
                             content = {@Content(
-                                    mediaType =  "*/*",
-                                   schema = @Schema(implementation = CommentDto.class))
+                                    mediaType = "*/*",
+                                    schema = @Schema(implementation = CommentDto.class))
                             }),
                     @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
 
     @GetMapping("{id}/comments")
-    public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long id){
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Iterable<CommentDto>> getComments(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getComments());
     }
 
     @Operation(
-            operationId = "postComment",
+            operationId = "addComment",
             summary = "Добавить комментарий к объявлению",
             tags = {"Комментарии"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }),
-                     @ApiResponse(responseCode = "401", description = "Unauthorized")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
             }
     )
     @PostMapping("{id}/comments")
-    public ResponseEntity<CommentDto> postComment(@PathVariable Long id,@Parameter(description = "Необходимо корректно" +
+    public ResponseEntity<CommentDto> addComment(@PathVariable Long id, @Parameter(description = "Необходимо корректно" +
             " заполнить комментарий", example = "Тест"
-    ) @RequestBody CommentDto commentDto) {
+    ) @RequestBody CommentDto commentDto) throws IOException {
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.addComment(commentDto));
     }
-
 
     @Operation(
             operationId = "deleteComment",
@@ -72,22 +75,27 @@ public class CommentController {
                             responseCode = "200",
                             description = "Удаляем комментарий ",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }
                     ),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden")
             }
 
     )
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long adId, @PathVariable Long commentId) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean result = commentService.deleteComment(commentId);
+        if (result) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(
-            operationId = "patchComment",
+            operationId = "updateComment",
             summary = "Обновить комментарий",
             tags = "Комментарии",
             responses = {
@@ -95,7 +103,7 @@ public class CommentController {
                             responseCode = "200",
                             description = "Изменяемый комментарий ",
                             content = {@Content(
-                                    mediaType =  "*/*",
+                                    mediaType = "*/*",
                                     schema = @Schema(implementation = CommentDto.class))
                             }
                     ),
@@ -104,10 +112,7 @@ public class CommentController {
             }
     )
     @PatchMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> patchComment(@RequestBody CommentDto commentDto, @PathVariable Long adId, @PathVariable Long commentId) {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto, @PathVariable Long adId, @PathVariable Long commentId) {
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentDto, commentId));
     }
-
-
-
 }

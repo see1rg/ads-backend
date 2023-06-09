@@ -25,6 +25,9 @@ public class Ads {
     @ToString.Exclude
     private User authorId;
 
+    @OneToOne(mappedBy = "ads")
+    private Image image;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

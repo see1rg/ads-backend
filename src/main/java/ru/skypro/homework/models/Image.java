@@ -1,6 +1,9 @@
 package ru.skypro.homework.models;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -21,9 +24,14 @@ public class Image {
     private String mediaType;
     @Lob
     private byte[] preview;
-    @ManyToOne
+    @OneToOne(optional = true)
     @JoinColumn(name = "ads_id", referencedColumnName = "id")
     private Ads ads;
+
+    @OneToOne(optional = true)
+    @JoinColumn(referencedColumnName = "id")
+    private User user;
+
 
     @Override
     public boolean equals(Object o) {
