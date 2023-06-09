@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private BigDecimal price;
     private String title;
 

@@ -1,5 +1,6 @@
 package ru.skypro.homework.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,69 +15,67 @@ import ru.skypro.homework.services.ImageService;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Optional;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final ImageService imageService;
     private final UserRepository userRepository;
-
-    public AdsServiceImpl(AdsRepository adsRepository, ImageService imageService, UserRepository userRepository) {
-        this.adsRepository = adsRepository;
-        this.imageService = imageService;
-        this.userRepository = userRepository;
-    }
+    private final AdsMapper adsMapper;
 
     @Override
     public Collection<AdsDto> getAllAds() {
         Collection<Ads> ads = adsRepository.findAll();
         log.info("Get all ads: " + ads);
-        return AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
     public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException {
-        Ads newAds = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
+        Ads newAds = adsMapper.adsDtoToAds(adsDto);
         log.info("Save ads: " + newAds);
         imageService.saveImage(newAds.getId(), image);
         log.info("Photo have been saved");
-        return AdsMapper.INSTANCE.adsToAdsDto(newAds);
+        return adsMapper.adsToAdsDto(newAds);
     }
 
     @Override
-    public Optional<AdsDto> getAds(Long id) {
-        Ads ads = adsRepository.findById(id);
+    public AdsDto getAds(Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         log.info("Get ads: " + ads);
-        return Optional.of(AdsMapper.INSTANCE.adsToAdsDto(ads));
+        return adsMapper.adsToAdsDto(ads);
     }
 
     @Override
-    public boolean removeAd(Long id) {
+    public boolean removeAd(Integer id) {
         log.info("Delete ads: " + id);
+        if (!adsRepository.existsById(id)) {
+            return false;
+        }
         adsRepository.deleteById(id);
-        return false;
+        return true;
     }
 
     @Override
-    public AdsDto updateAds(AdsDto adsDto, Long id) {
-        Ads ads = AdsMapper.INSTANCE.adsDtoToAds(adsDto);
+    public AdsDto updateAds(AdsDto adsDto, Integer id) {
+        Ads ads = adsMapper.adsDtoToAds(adsDto);
         log.info("Update ads: " + ads);
-        return AdsMapper.INSTANCE.adsToAdsDto(adsRepository.save(ads));
+        return adsMapper.adsToAdsDto(adsRepository.save(ads));
     }
 
     @Override
     public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
-        Long authorId = userRepository.findByEmail(email).get().getId();
+        Integer authorId = userRepository.findByEmail(email).getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
-        return ads.isEmpty() ? null : AdsMapper.INSTANCE.adsCollectionToAdsDto(ads);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
-    public byte[] updateImage(Long id, MultipartFile image) throws IOException {
+    public byte[] updateImage(Integer id, MultipartFile image) throws IOException {
         log.info("Update image: " + id);
         imageService.saveImage(id, image);
         log.info("Photo have been saved");

@@ -49,6 +49,7 @@ public class AuthController {
         }
     }
 
+
     @Operation(
             operationId = "register",
             summary = "Регистрация пользователя",

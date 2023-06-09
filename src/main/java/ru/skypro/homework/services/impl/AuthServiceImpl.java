@@ -1,5 +1,7 @@
 package ru.skypro.homework.services.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -8,23 +10,22 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
+import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.services.AuthService;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
   private final UserDetailsManager manager;
 
   private final PasswordEncoder encoder;
 
-  public AuthServiceImpl(UserDetailsManager manager, PasswordEncoder passwordEncoder) {
-    this.manager = manager;
-    this.encoder = passwordEncoder;
-  }
-
   @Override
   public boolean login(String userName, String password) {
     if (!manager.userExists(userName)) {
+      log.info("Пользователь с именем {} не найден", userName);
       return false;
     }
     UserDetails userDetails = manager.loadUserByUsername(userName);
@@ -34,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
   @Override
   public boolean register(RegisterReq registerReq, Role role) {
     if (manager.userExists(registerReq.getUsername())) {
+      log.info("Пользователь с именем {} уже существует", registerReq.getUsername());
       return false;
     }
     manager.createUser(
@@ -53,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
       manager.changePassword(userName, encodedNewPassword);
       return true;
     }
+    log.info("Пользователь с именем {} не найден", userName);
     return false;
   }
 }

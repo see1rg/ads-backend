@@ -1,53 +1,69 @@
 package ru.skypro.homework.services.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dtos.CommentDto;
 import ru.skypro.homework.mappers.CommentMapper;
 import ru.skypro.homework.models.Comment;
+import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.repositories.CommentRepository;
+import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
 import java.util.Collection;
-import java.util.List;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
-
-    public CommentServiceImpl(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
-    }
-
+    private final AdsRepository adsRepository;
+    private final UserRepository userRepository;
+    private final CommentMapper commentMapper;
 
     @Override
-    public Collection<CommentDto> getComments() {
-        Collection<Comment> comments = commentRepository.findAll();
-        log.info("Get all comments: " + comments);
-        return CommentMapper.INSTANCE.commentCollectionToCommentDto(comments);
+    public Collection<CommentDto> getComments(Integer id) {
+        Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
+        log.info("Get all comments for ad: " + id);
+        return commentMapper.commentCollectionToCommentDto(comments);
     }
 
     @Override
-    public CommentDto addComment(CommentDto commentDto) {
-        Comment newComment = CommentMapper.INSTANCE.INSTANCE.commentDtoToComment(commentDto);
+    public CommentDto addComment(Integer id, CommentDto commentDto, Authentication authentication) {
+        if (!adsRepository.existsById(id)) {
+            throw new IllegalArgumentException("Ad not found");
+        }
+        Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
-        return CommentMapper.INSTANCE.INSTANCE.commentToCommentDto(newComment);
+        newComment.setAds(adsRepository.findById(id).orElseThrow(()
+                -> new IllegalArgumentException("Ad not found")));
+        newComment.setAuthorId(userRepository.findByEmail(authentication.getName()));
+        commentRepository.save(newComment);
+        return commentMapper.commentToCommentDto(newComment);
     }
 
     @Override
-    public boolean deleteComment(Long id) {
+    public boolean deleteComment(Integer adId, Integer id) {
+        if (!adsRepository.existsById(adId)) {
+            return false;
+        }
         log.info("Delete comment: " + id);
         commentRepository.deleteById(id);
-        return false;
+        return true;
     }
 
     @Override
-    public CommentDto updateComment(CommentDto commentDto, Long id) {
-        Comment comment = CommentMapper.INSTANCE.INSTANCE.commentDtoToComment(commentDto);
+    public CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) {
+        if (!adsRepository.existsById(adId)) {
+            throw new IllegalArgumentException("Ad not found");
+        }
+        Comment comment = commentMapper.commentDtoToComment(commentDto);
+        comment.setAuthorId(userRepository.findByEmail(authentication.getName()));
         log.info("Update comment: " + comment);
-        return CommentMapper.INSTANCE.INSTANCE.commentToCommentDto(commentRepository.save(comment));
+        return commentMapper.commentToCommentDto(commentRepository.save(comment));
     }
 }
