@@ -52,4 +52,8 @@ public class ImageService {
         imageRepository.save(imageToSave);
         return imageToSave.getPreview();
     }
+
+    public byte[] getAvatar(int id) {
+        return imageRepository.findById(id).get().getPreview();
+    }
 }

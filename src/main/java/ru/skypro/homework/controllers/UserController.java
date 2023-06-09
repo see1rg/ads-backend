@@ -55,7 +55,7 @@ public class UserController {
         if (!authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         if (authService.changePassword(newPassword, authentication.getName())) {
@@ -97,7 +97,7 @@ public class UserController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @PatchMapping("/me")
+    @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user, Authentication authentication) {
         log.info("User {} update", authentication.getName());
         return ResponseEntity.ok(userService.update(user, authentication.getName()));
@@ -118,5 +118,10 @@ public class UserController {
         log.info("User {} update avatar", authentication.getName());
         imageService.saveAvatar(authentication.getName(), image);
         return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping(value = "/{id}/getImage", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
+        return ResponseEntity.ok(imageService.getAvatar(id));
     }
 }

@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import ru.skypro.homework.dtos.Role;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +17,7 @@ import java.util.Objects;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Integer id;
     private String email;
     private String firstName;
