@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.NewPasswordDto;
+import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.services.AuthService;
 import ru.skypro.homework.services.ImageService;
@@ -98,7 +99,7 @@ public class UserController {
             }
     )
     @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto user, Authentication authentication) {
+    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Authentication authentication) {
         log.info("User {} update", authentication.getName());
         return ResponseEntity.ok(userService.update(user, authentication.getName()));
     }

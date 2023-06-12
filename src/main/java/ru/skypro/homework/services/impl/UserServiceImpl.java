@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.models.User;
@@ -25,6 +26,11 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userMapper.userDtoToUser(userDto);
         log.info("Update user: " + updatedUser);
         return userMapper.userToUserDto(userRepository.save(updatedUser));
+    }
+
+    @Override
+    public RegisterReq update(RegisterReq user, String email) {
+        return null;
     }
 
     @Override
