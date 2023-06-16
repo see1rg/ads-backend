@@ -20,8 +20,6 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
 
     Collection<Ads> findAllByAuthorId(Integer authorId);
 
-    List<Ads> findAdsByAuthorOrderByPk(User author);
-
     @Query(value = "SELECT * FROM ads WHERE title ilike '%' || ?1 || '%' ", nativeQuery = true)
     List<Ads> findLikeTitle(String title);
 }
