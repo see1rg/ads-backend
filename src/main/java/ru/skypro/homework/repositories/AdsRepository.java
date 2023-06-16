@@ -2,7 +2,9 @@ package ru.skypro.homework.repositories;
 
 import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.models.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,4 +19,9 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
     void deleteById(Integer id);
 
     Collection<Ads> findAllByAuthorId(Integer authorId);
+
+    List<Ads> findAdsByAuthorOrderByPk(User author);
+
+    @Query(value = "SELECT * FROM ads WHERE title ilike '%' || ?1 || '%' ", nativeQuery = true)
+    List<Ads> findLikeTitle(String title);
 }
