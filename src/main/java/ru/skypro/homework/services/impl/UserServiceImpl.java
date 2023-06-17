@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
     public RegisterReq update(RegisterReq user, String email) {
         log.info("Update user: " + email);
         User optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.equals(null)) {
+        if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }
         optionalUser.setEmail(user.getUsername());
