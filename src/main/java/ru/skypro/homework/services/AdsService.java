@@ -5,7 +5,6 @@ import ru.skypro.homework.dtos.AdsDto;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Optional;
 
 public interface AdsService {
 
