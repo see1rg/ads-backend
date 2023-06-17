@@ -22,35 +22,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-//    @Override
-//    public UserDto update(UserDto userDto, String email) {
-//        User updatedUser = userMapper.userDtoToUser(userDto);
-//        log.info("Update user: " + updatedUser);
-//        return userMapper.userToUserDto(userRepository.save(updatedUser));
-//    }
-
     @Override
     public Optional<UserDto> getUser(String email) {
         log.info("Get user: " + email);
         User user = userRepository.findUserByEmailIs(email);
         UserDto userDto = userMapper.userToUserDto(user);
         return Optional.ofNullable(userDto);
-    }
-
-    @Override
-    public UserDto updateUser(UserDto userDto, Integer id) {
-        log.info("Update user: " + userDto);
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
-        User existingUser = optionalUser.get();
-        existingUser.setEmail(userDto.getEmail());
-        existingUser.setFirstName(userDto.getFirstName());
-        existingUser.setLastName(userDto.getLastName());
-        existingUser.setPhone(userDto.getPhone());
-
-        return userMapper.userToUserDto(userRepository.save(existingUser));
     }
 
     @Override

@@ -22,4 +22,5 @@ public interface AdsService {
 
     byte[] updateImage(Integer id, MultipartFile image) throws IOException;
 
+    Collection<AdsDto> getAdsLike(String title);
 }

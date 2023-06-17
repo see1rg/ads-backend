@@ -17,4 +17,7 @@ public interface AdsRepository extends JpaRepository<Ads, Integer> {
     void deleteById(Integer id);
 
     Collection<Ads> findAllByAuthorId(Integer authorId);
+
+
+    Collection<Ads> findByTitleLike(String title);
 }

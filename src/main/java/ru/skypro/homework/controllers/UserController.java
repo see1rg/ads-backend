@@ -104,10 +104,11 @@ public class UserController {
     )
     @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Principal principal) {
-        RegisterReq userDto = userService.update(user, principal);
+        RegisterReq updatedUser = userService.update(user, principal);
         log.info("User {} update", principal.getName());
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(updatedUser);
     }
+
 
     @Operation(
             operationId = "updateUserImage",

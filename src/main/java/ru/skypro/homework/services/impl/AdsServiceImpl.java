@@ -69,7 +69,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
-        Integer authorId = userRepository.findByEmail(email).getId();
+        Integer authorId = userRepository.findUserByEmailIs(email).getId();
         Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
         return adsMapper.adsCollectionToAdsDto(ads);
     }
@@ -80,5 +80,12 @@ public class AdsServiceImpl implements AdsService {
         imageService.saveImage(id, image);
         log.info("Photo have been saved");
         return image.getBytes();
+    }
+
+    @Override
+    public Collection<AdsDto> getAdsLike(String title) {
+        Collection <Ads> ads = adsRepository.findByTitleLike(title);
+        log.info("Get ads with title: " + title);
+        return adsMapper.adsCollectionToAdsDto(ads);
     }
 }
