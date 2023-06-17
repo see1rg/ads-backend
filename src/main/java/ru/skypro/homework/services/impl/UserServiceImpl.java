@@ -1,57 +1,52 @@
 package ru.skypro.homework.services.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
-import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.models.User;
+import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.UserService;
 
-import java.util.Optional;
+import java.security.Principal;
 
 @Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl  implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final UserMapper mapper = Mappers.getMapper(UserMapper.class);
 
-    @Override
-    public UserDto update(UserDto userDto, String email) {
-        User updatedUser = userMapper.userDtoToUser(userDto);
-        log.info("Update user: " + updatedUser);
-        return userMapper.userToUserDto(userRepository.save(updatedUser));
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
+    /**
+     * Обновление пользователя
+     */
     @Override
-    public RegisterReq update(RegisterReq user, String email) {
-        return null;
-    }
-
-    @Override
-    public Optional<UserDto> getUser(String email) {
-        log.info("Get user: " + email);
-        return userRepository.findUserByEmailIs(email).map(userMapper::userToUserDto);
-    }
-
-    @Override
-    public UserDto updateUser(UserDto userDto, Integer id) {
-        log.info("Update user: " + userDto);
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (!optionalUser.isPresent()) {
-            throw new IllegalArgumentException("User not found");
+    public UserDto updateUser(UserDto userDto, Principal principal) {
+        User user = userRepository.findByUsername(principal.getName());
+        if (user == null) {
+            throw new UserNotFoundException();
         }
-        User existingUser = optionalUser.get();
-        existingUser.setEmail(userDto.getEmail());
-        existingUser.setFirstName(userDto.getFirstName());
-        existingUser.setLastName(userDto.getLastName());
-        existingUser.setPhone(userDto.getPhone());
+        user.setFirstName(userDto.getFirstName());
+        user.setLastName(userDto.getLastName());
+        user.setPhone(userDto.getPhone());
+        user.setImage(userDto.getImage());
+        userRepository.save(user);
+    return mapper.userToUserDto(user);
 
-        return userMapper.userToUserDto(userRepository.save(existingUser));
     }
+    /**
+     * Получение пользователя
+     */
+    @Override
+    public UserDto getUser(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+    return mapper.userToUserDto(user);
+    }
+
 }

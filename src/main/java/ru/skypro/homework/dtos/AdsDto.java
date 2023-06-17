@@ -2,14 +2,12 @@ package ru.skypro.homework.dtos;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class AdsDto {
-
-    private Integer author;
+    private int author;
     private String image;
-    private Long pk;
-    private BigDecimal price;
+    private int pk;
+    private int price;
     private String title;
+    private String description;
 }

@@ -1,128 +1,111 @@
 package ru.skypro.homework.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.NewPasswordDto;
-import ru.skypro.homework.dtos.RegisterReq;
+import ru.skypro.homework.dtos.UserDataDto;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.services.AuthService;
-import ru.skypro.homework.services.ImageService;
 import ru.skypro.homework.services.UserService;
+import ru.skypro.homework.services.impl.ImageServiceImpl;
 
-import java.io.IOException;
-import java.util.Optional;
+import java.security.Principal;
 
 @Slf4j
+@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
-@CrossOrigin(value = "http://localhost:3000")
 public class UserController {
+
     private final UserService userService;
     private final AuthService authService;
-    private final ImageService imageService;
+    private final ImageServiceImpl imageService;
 
-    private PasswordEncoder passwordEncoder;
+    public UserController(UserService userService, AuthService authService, ImageServiceImpl imageService) {
+        this.userService = userService;
+        this.authService = authService;
+        this.imageService = imageService;
+    }
 
-    @Operation(
-            operationId = "setPassword",
-            summary = "Обновление пароля",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = NewPasswordDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
+    /**
+     * Установить новый пароль GET <a href="http://localhost:3000/users">...</a>
+     **/
+
     @PostMapping("/set_password")
-    public ResponseEntity<NewPasswordDto> setPassword(@RequestBody NewPasswordDto newPassword,
-                                                      Authentication authentication) {
-        log.info("Set password: " + newPassword);
-        Optional<UserDto> user = userService.getUser(authentication.getName());
-        if (!authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    public ResponseEntity<NewPasswordDto> setPassword(@RequestBody NewPasswordDto newPassword, Principal principal) {
+        if (authService.setPassword(newPassword, principal)) {
+            return ResponseEntity.ok(newPassword);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        if (user.isEmpty()) {
+
+    }
+    /**
+     * Получение текущего пользователя
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDto user = userService.getUser(authentication.getName());
+    return ResponseEntity.ok(user);
+    }
+
+    /** Редактировать пользователя,
+     * PUT <a href="http://localhost:3000/ads/">...</a>{id}
+     **/
+
+    @PatchMapping("/me")
+    public ResponseEntity<UserDataDto> updateUser(@RequestBody UserDto userDto, Principal principal) {
+        UserDto user = userService.updateUser(userDto, principal);
+        UserDataDto userDataDto = new UserDataDto();
+        userDataDto.setData(user);
+//        user.setCity("");
+//        user.setRegDate("");
+//        user.setImage("");
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        if (authService.changePassword(newPassword, authentication.getName())) {
-            return ResponseEntity.ok(new NewPasswordDto());
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        return ResponseEntity.ok(userDataDto);
     }
 
-    @Operation(
-            operationId = "getUser",
-            summary = "Получить информацию об авторизованном пользователе",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
-    @GetMapping("/me")
-    public ResponseEntity<Optional<UserDto>> getUser(Authentication authentication) {
-        log.info("User {}", authentication.getName());
-        return ResponseEntity.ok(userService.getUser(authentication.getName()));
-    }
+    /**
+     * Загрузка картинки для пользователя
+     */
 
-    @Operation(
-            operationId = "updateUser",
-            summary = "Обновить информацию об авторизованном пользователе",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))
-                    }),
-                    @ApiResponse(responseCode = "204", description = "No Content"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
-    @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Authentication authentication) {
-        log.info("User {} update", authentication.getName());
-        return ResponseEntity.ok(userService.update(user, authentication.getName()));
-    }
-
-    @Operation(
-            operationId = "updateUserImage",
-            summary = "Обновить аватар авторизованного пользователя",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image,
-                                                Authentication authentication) throws IOException {
-        log.info("User {} update avatar", authentication.getName());
-        imageService.saveAvatar(authentication.getName(), image);
-        return ResponseEntity.status(200).build();
+    public ResponseEntity<UserDto> uploadUserImage(@RequestParam MultipartFile image,Principal principal) {
+        UserDto user = userService.getUser(principal.getName());
+        user.setImage("/image/user/" + imageService.saveImage(image));
+        userService.updateUser(user, principal);
+    return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/{id}/getImage", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
-        return ResponseEntity.ok(imageService.getAvatar(id));
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

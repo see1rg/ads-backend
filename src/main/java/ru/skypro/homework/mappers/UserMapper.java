@@ -5,20 +5,20 @@ import org.mapstruct.Mapping;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.models.User;
 
-@Mapper(componentModel = "spring")
+import java.util.List;
+
+@Mapper
 public interface UserMapper {
-    @Mapping(target = "image", expression = "java(getImage(user))")
     UserDto userToUserDto(User user);
 
-    default String getImage(User user) {
-        if (user.getAvatar() == null) {
-            return null;
-        }
-        return "/users/" + user.getId() + "/getImage";
-    }
+    List<UserDto> userToUserDto(List<User> userList);
 
-    @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "adsList", ignore = true)
+    @Mapping(target = "commentList", ignore = true)
+    @Mapping(target = "password", ignore = true)
     User userDtoToUser(UserDto userDto);
+
+    List<User> userDtoToUser(List<UserDto> userDto);
 
 }

@@ -1,21 +1,12 @@
 package ru.skypro.homework.services;
 
 
-import org.springframework.stereotype.Service;
-import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 
-import java.util.Optional;
+import java.security.Principal;
 
-@Service
 public interface UserService {
+    UserDto updateUser(UserDto userDto, Principal principal);
 
-    UserDto update(UserDto user, String email);
-
-    RegisterReq update(RegisterReq user, String email);
-
-    Optional<UserDto> getUser(String name);
-
-    UserDto updateUser(UserDto user, Integer id);
-
+    UserDto getUser(String email);
 }

@@ -1,27 +1,44 @@
 package ru.skypro.homework.mappers;
 
-import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
-import org.springframework.stereotype.Component;
 import ru.skypro.homework.dtos.AdsDto;
+import ru.skypro.homework.dtos.CommentDto;
+import ru.skypro.homework.dtos.CreateAdsDto;
 import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.models.Comment;
 
-import java.util.Collection;
+import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface AdsMapper {
-    @Mapping(source = "id", target = "pk")
-    @Mapping(target = "image", expression ="java(ads.getImage().getFilePath())" )
-    @Mapping(target = "author", expression = "java(ads.getAuthorId().getId())")
+    @Mapping(source = "author.id", target = "author")
+    @Mapping(source = "description", target = "description")
     AdsDto adsToAdsDto(Ads ads);
 
-    @InheritInverseConfiguration
-    @Mapping(target = "image", ignore = true)
-    @Mapping(target = "authorId", ignore = true)
+    List<AdsDto> adsToAdsDto(List<Ads> ads);
+
+    @Mapping(source = "author", target = "author.id")
+    @Mapping(target = "description", ignore = true)
     Ads adsDtoToAds(AdsDto adsDto);
 
-    Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
+    List<Ads> adsDtoToAds(List<AdsDto> adsDto);
+
+    @Mapping(target = "author", ignore = true)
+    @Mapping(target = "pk", ignore = true)
+    Ads createAdsToAds(CreateAdsDto createAds);
+
+    @Mapping(source = "author.id", target = "author")
+    @Mapping(source = "id", target = "pk")
+    CommentDto adsCommentToAdsCommentDto(Comment adsComment);
+
+    List<CommentDto> adsCommentToAdsCommentDto(List<Comment> adsComment);
+
+    @Mapping(source = "author", target = "author.id")
+    @Mapping(source = "pk", target = "pk.pk")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    Comment adsCommentDtoToAdsComment(CommentDto adsCommentDto);
+
+    List<Comment> adsCommentDtoToAdsComment(List<CommentDto> adsCommentDto);
 }

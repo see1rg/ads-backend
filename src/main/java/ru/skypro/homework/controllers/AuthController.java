@@ -1,9 +1,5 @@
 package ru.skypro.homework.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.skypro.homework.dtos.LoginReq;
 import ru.skypro.homework.dtos.RegisterReq;
-import ru.skypro.homework.dtos.Role;
+import ru.skypro.homework.dtos.RoleDto;
 import ru.skypro.homework.services.AuthService;
 
-import static ru.skypro.homework.dtos.Role.USER;
+import static ru.skypro.homework.dtos.RoleDto.USER;
 
 @Slf4j
 @CrossOrigin(value = "http://localhost:3000")
@@ -27,19 +23,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(
-            operationId = "login",
-            summary = "Авторизация пользователя",
-            tags = {"Авторизация"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = Object.class))
-                    }),
-                    @ApiResponse(responseCode = "404", description = "Not Found"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden")
-            }
-    )
+    /**
+     * Авторизация пользователя
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
@@ -48,21 +34,12 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-
-
-    @Operation(
-            operationId = "register",
-            summary = "Регистрация пользователя",
-            tags = {"Регистрация"},
-            responses = {
-                    @ApiResponse(responseCode = "404", description = "Not Found"),
-                    @ApiResponse(responseCode = "201", description = "Created"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden")
-            })
+    /**
+     * Регистрация пользователя
+     */
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req) {
-        Role role = req.getRole() == null ? USER : req.getRole();
+        RoleDto role = req.getRole() == null ? USER : req.getRole();
         if (authService.register(req, role)) {
             return ResponseEntity.ok().build();
         } else {

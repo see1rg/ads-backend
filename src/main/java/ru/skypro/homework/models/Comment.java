@@ -1,44 +1,21 @@
 package ru.skypro.homework.models;
 
-import lombok.*;
-import org.hibernate.Hibernate;
+import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Objects;
 
-@Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@Table(name = "comments")
+@Data
+@Entity(name="comments")
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
+    @ManyToOne
+    @JoinColumn(name = "ads_id")
+    private Ads pk;
     private String createdAt;
     private String text;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ads_id", nullable = false)
-    @ToString.Exclude
-    private Ads ads;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude
-    private User authorId;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Comment comment = (Comment) o;
-        return getId() != null && Objects.equals(getId(), comment.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

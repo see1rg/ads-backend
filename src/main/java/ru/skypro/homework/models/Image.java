@@ -1,48 +1,40 @@
 package ru.skypro.homework.models;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.Hibernate;
+import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "images")
-public class Image {
+public class Image implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    private String filePath;
-    private long fileSize;
+    @Column(name = "id", unique = true)
+    private String id;
+    private Integer fileSize;
     private String mediaType;
     @Lob
-    private byte[] preview;
-    @OneToOne(optional = true)
-    @JoinColumn(name = "ads_id", referencedColumnName = "id")
-    private Ads ads;
-
-    @OneToOne(optional = true)
-    @JoinColumn(referencedColumnName = "id")
-    private User user;
-
+    private byte[] data;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Image image = (Image) o;
-        return getId() != null && Objects.equals(getId(), image.getId());
+        return Objects.equals(id, image.id) && Objects.equals(fileSize, image.fileSize) && Objects.equals(mediaType, image.mediaType) && Arrays.equals(data, image.data);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        int result = Objects.hash(id, fileSize, mediaType);
+        result = 31 * result + Arrays.hashCode(data);
+        return result;
     }
 }

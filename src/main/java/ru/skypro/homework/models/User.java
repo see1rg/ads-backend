@@ -1,43 +1,28 @@
 package ru.skypro.homework.models;
 
-import lombok.*;
-import org.hibernate.Hibernate;
-import ru.skypro.homework.dtos.Role;
+import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.Objects;
+import java.util.List;
 
-@Entity
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
-@Table(name = "users")
+@Data
+@Entity(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
-    private Integer id;
+    @Column(name = "user_id", unique = true)
+    private int id;
     private String email;
     private String firstName;
     private String lastName;
     private String phone;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    @OneToOne(mappedBy = "user")
-    private Image avatar;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        User user = (User) o;
-        return getId() != null && Objects.equals(getId(), user.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    private String regDate;
+    private String city;
+    private String image;
+    private String password;
+    @OneToMany(mappedBy = "author", cascade=CascadeType.ALL)
+    private List<Ads> adsList;
+    @OneToMany(mappedBy = "author", cascade=CascadeType.ALL)
+    private List<Comment> commentList;
+    private String role;
 }

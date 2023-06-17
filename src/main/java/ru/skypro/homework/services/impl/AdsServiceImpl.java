@@ -1,84 +1,218 @@
 package ru.skypro.homework.services.impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import ru.skypro.homework.dtos.AdsDto;
-import ru.skypro.homework.mappers.AdsMapper;
+import ru.skypro.homework.dtos.*;
 import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.models.Comment;
+import ru.skypro.homework.models.User;
+import ru.skypro.homework.exception.NoAccessException;
+import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.repositories.AdsRepository;
+import ru.skypro.homework.repositories.CommentRepository;
+import ru.skypro.homework.repositories.ImageRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
-import ru.skypro.homework.services.ImageService;
+import ru.skypro.homework.exception.AdsNotFoundException;
+import ru.skypro.homework.exception.UserNotFoundException;
+import ru.skypro.homework.exception.AdsCommentNotFoundException;
 
-import java.io.IOException;
-import java.util.Collection;
-
+import java.security.Principal;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 @Service
-@Transactional
-@Slf4j
-@RequiredArgsConstructor
-public class AdsServiceImpl implements AdsService {
+public class AdsServiceImpl  implements AdsService {
     private final AdsRepository adsRepository;
-    private final ImageService imageService;
+    private final AdsMapper mapper = Mappers.getMapper(AdsMapper.class);
+    private final CommentRepository adsCommentRepository;
     private final UserRepository userRepository;
-    private final AdsMapper adsMapper;
+    private final ImageRepository imageRepository;
+    private final ImageServiceImpl imageServiceImpl;
 
-    @Override
-    public Collection<AdsDto> getAllAds() {
-        Collection<Ads> ads = adsRepository.findAll();
-        log.info("Get all ads: " + ads);
-        return adsMapper.adsCollectionToAdsDto(ads);
+    public AdsServiceImpl(AdsRepository adsRepository, CommentRepository adsCommentRepository, UserRepository userRepository, ImageServiceImpl imageServiceImpl,ImageRepository imageRepository) {
+        this.adsRepository = adsRepository;
+        this.adsCommentRepository = adsCommentRepository;
+        this.userRepository = userRepository;
+        this.imageServiceImpl = imageServiceImpl;
+        this.imageRepository = imageRepository;
     }
-
+    /**
+     * Получение всех объявлений
+     */
     @Override
-    public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException {
-        Ads newAds = adsMapper.adsDtoToAds(adsDto);
-        log.info("Save ads: " + newAds);
-        imageService.saveImage(newAds.getId(), image);
-        log.info("Photo have been saved");
-        return adsMapper.adsToAdsDto(newAds);
+    public ResponseWrapperAdsDto getAllAds() {
+        List<Ads> adsList = adsRepository.findAll();
+        return getResponseWrapperAds(adsList);
     }
-
-    @Override
-    public AdsDto getAds(Integer id) {
-        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
-        log.info("Get ads: " + ads);
-        return adsMapper.adsToAdsDto(ads);
+    private ResponseWrapperAdsDto getResponseWrapperAds(List<Ads> adsList) {
+        List<AdsDto> adsDtoList = mapper.adsToAdsDto(adsList);
+        ResponseWrapperAdsDto responseWrapperAds = new ResponseWrapperAdsDto();
+        responseWrapperAds.setCount(adsDtoList.size());
+        responseWrapperAds.setResults(adsDtoList);
+        return responseWrapperAds;
     }
-
+    /**
+     * Создание объявления
+     */
     @Override
-    public boolean removeAd(Integer id) {
-        log.info("Delete ads: " + id);
-        if (!adsRepository.existsById(id)) {
-            return false;
+    public AdsDto createAds(CreateAdsDto createAds, MultipartFile file, Authentication authentication) {
+        Ads ads = mapper.createAdsToAds(createAds);
+        ads.setAuthor(userRepository.findUserByEmail(authentication.getName()).orElseThrow(UserNotFoundException::new));
+        ads.setImage("/image/" + imageServiceImpl.saveImage(file));
+        adsRepository.save(ads);
+        return mapper.adsToAdsDto(ads);
+    }
+    /**
+     * Получение списка комментариев к объявлению
+     */
+    @Override
+    public ResponseWrapperCommentDto getAdsComments(int pk) {
+        Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        List<Comment> adsCommentList = adsCommentRepository.findByPk(ads);
+        List<CommentDto> adsCommentDtoList = mapper.adsCommentToAdsCommentDto(adsCommentList);
+        ResponseWrapperCommentDto responseWrapperAdsComment = new ResponseWrapperCommentDto();
+        responseWrapperAdsComment.setCount(adsCommentDtoList.size());
+        responseWrapperAdsComment.setResults(adsCommentDtoList);
+        return responseWrapperAdsComment;
+    }
+    /**
+     *Добавление комментария
+     */
+    @Override
+    public CommentDto addAdsComment(int pk, CommentDto adsCommentDto, String username) {
+        Comment adsComment = new Comment();
+        adsComment.setAuthor(userRepository.findUserByEmail(username).orElseThrow(UserNotFoundException::new));
+        adsComment.setPk(adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new));
+        adsComment.setCreatedAt(OffsetDateTime.now().toString());
+        adsComment.setText(adsCommentDto.getText());
+        adsCommentRepository.save(adsComment);
+        return mapper.adsCommentToAdsCommentDto(adsComment);
+    }
+    /**
+     * Получения объявления по номеру
+     */
+    @Override
+    public FullAdsDto getAds(int id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        User user = userRepository.findById(ads.getAuthor().getId()).orElseThrow(UserNotFoundException::new);
+        FullAdsDto fullAds = new FullAdsDto();
+        fullAds.setAuthorFirstName(user.getFirstName());
+        fullAds.setAuthorLastName(user.getLastName());
+        fullAds.setDescription(ads.getDescription());
+        fullAds.setImage(ads.getImage());
+        fullAds.setEmail(user.getEmail());
+        fullAds.setPhone(user.getPhone());
+        fullAds.setPk(ads.getPk());
+        fullAds.setPrice(ads.getPrice());
+        fullAds.setTitle(ads.getTitle());
+        return fullAds;
+    }
+    /**
+     * Удаление объявления
+     */
+    @Override
+    public AdsDto removeAds(int id, Authentication authentication) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (checkRole(ads, authentication)) {
+            adsCommentRepository.deleteByAdsId(id);
+            adsRepository.deleteById(id);
+            String[] ls = ads.getImage().split("/");
+            imageRepository.deleteById(ls[2]);
+            return mapper.adsToAdsDto(ads);
+        } else {
+            throw new NoAccessException();
         }
-        adsRepository.deleteById(id);
-        return true;
     }
-
+    /**
+     * Обновление объявления
+     */
     @Override
-    public AdsDto updateAds(AdsDto adsDto, Integer id) {
-        Ads ads = adsMapper.adsDtoToAds(adsDto);
-        log.info("Update ads: " + ads);
-        return adsMapper.adsToAdsDto(adsRepository.save(ads));
+    public AdsDto updateAds(int id, CreateAdsDto adsDto, Authentication authentication) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        if (checkRole(ads, authentication)) {
+            ads.setTitle(adsDto.getTitle());
+            ads.setPrice(adsDto.getPrice());
+            ads.setDescription(adsDto.getDescription());
+            adsRepository.save(ads);
+            AdsDto adsDtoRen = mapper.adsToAdsDto(ads);
+            return adsDtoRen;
+        } else {
+            throw new NoAccessException();
+        }
     }
-
     @Override
-    public Collection<AdsDto> getMe(String email) {
-        log.info("Get ads: " + email);
-        Integer authorId = userRepository.findByEmail(email).getId();
-        Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
-        return adsMapper.adsCollectionToAdsDto(ads);
+    public CommentDto getAdsComment(int pk, int id) {
+        adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
+        return mapper.adsCommentToAdsCommentDto(adsComment);
     }
-
+    /**
+     * Удаление комментария
+     */
     @Override
-    public byte[] updateImage(Integer id, MultipartFile image) throws IOException {
-        log.info("Update image: " + id);
-        imageService.saveImage(id, image);
-        log.info("Photo have been saved");
-        return image.getBytes();
+    public CommentDto deleteAdsComment(int pk, int id, Authentication authentication) {
+        Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
+        Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        if (checkRole(ads, authentication)) {
+            adsCommentRepository.deleteById(id);
+            return mapper.adsCommentToAdsCommentDto(adsComment);
+        } else {
+            throw new NoAccessException();
+        }
+    }
+    /**
+     * Обновление комментария
+     */
+    @Override
+    public CommentDto updateAdsComment(int pk, int id, CommentDto adsCommentDto, Authentication authentication) {
+        Comment adsComment = adsCommentRepository.findById(id).orElseThrow(AdsCommentNotFoundException::new);
+        Ads ads = adsRepository.findById(pk).orElseThrow(AdsNotFoundException::new);
+        if (checkRole(ads, authentication)) {
+            adsComment.setAuthor(userRepository.findById(adsComment.getAuthor().getId()).orElseThrow(UserNotFoundException::new));
+            adsComment.setPk(ads);
+            adsComment.setText(adsCommentDto.getText());
+            adsComment.setCreatedAt(OffsetDateTime.now().toString());
+            adsCommentRepository.save(adsComment);
+            return adsCommentDto;
+        } else {
+            throw new NoAccessException();
+        }
+
+    }
+    /**
+     * Обновление картинки объявления
+     */
+    public AdsDto uploadAdsImage( MultipartFile file, Integer id) {
+        Ads ads = adsRepository.findById(id).orElseThrow(AdsNotFoundException::new);
+        ads.setImage("/image/" + imageServiceImpl.saveImage(file));
+        adsRepository.save(ads);
+        return mapper.adsToAdsDto(ads);
+    }
+    /**
+     * Получения списка объявления пользователя
+     */
+    @Override
+    public ResponseWrapperAdsDto getAdsMe(Principal principal) {
+        User user = userRepository.findByEmail(principal.getName());
+        List<Ads> adsList = adsRepository.findAdsByAuthorOrderByPk(user);
+        return getResponseWrapperAds(adsList);
+    }
+    private boolean checkRole(Ads ads, Authentication authentication){
+        if (authentication.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().contains("ADMIN"))
+                || authentication.getName().equals(ads.getAuthor().getEmail())){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Поиск списка объявления по названию
+     */
+    @Override
+    public ResponseWrapperAdsDto getAdsByTitle(String title) {
+        List<Ads> adsList = adsRepository.findLikeTitle(title);
+        return getResponseWrapperAds(adsList);
     }
 }
