@@ -5,17 +5,16 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
 public interface UserService {
 
-    UserDto update(UserDto user, String email);
-
     Optional<UserDto> getUser(String name);
 
     UserDto updateUser(UserDto user, Integer id);
 
-    RegisterReq update(RegisterReq user, String email);
+    RegisterReq update(RegisterReq user, Principal principal);
 
 }

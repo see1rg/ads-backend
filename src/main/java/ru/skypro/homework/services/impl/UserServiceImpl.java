@@ -11,6 +11,7 @@ import ru.skypro.homework.models.User;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.UserService;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
@@ -21,12 +22,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    @Override
-    public UserDto update(UserDto userDto, String email) {
-        User updatedUser = userMapper.userDtoToUser(userDto);
-        log.info("Update user: " + updatedUser);
-        return userMapper.userToUserDto(userRepository.save(updatedUser));
-    }
+//    @Override
+//    public UserDto update(UserDto userDto, String email) {
+//        User updatedUser = userMapper.userDtoToUser(userDto);
+//        log.info("Update user: " + updatedUser);
+//        return userMapper.userToUserDto(userRepository.save(updatedUser));
+//    }
 
     @Override
     public Optional<UserDto> getUser(String email) {
@@ -53,9 +54,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegisterReq update(RegisterReq user, String email) {
-        log.info("Update user: " + email);
-        User optionalUser = userRepository.findUserByEmailIs(email);
+    public RegisterReq update(RegisterReq user, Principal principal) {
+        log.info("Update user: " + principal);
+        User optionalUser = userRepository.findUserByEmailIs(principal.getName());
         if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }

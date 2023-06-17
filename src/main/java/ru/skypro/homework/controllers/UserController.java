@@ -22,6 +22,7 @@ import ru.skypro.homework.services.ImageService;
 import ru.skypro.homework.services.UserService;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Optional;
 
 @Slf4j
@@ -102,10 +103,10 @@ public class UserController {
             }
     )
     @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("User {} update", authentication.getName());
-        return ResponseEntity.ok(userService.update(user, authentication.getName()));
+    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Principal principal) {
+        RegisterReq userDto = userService.update(user, principal);
+        log.info("User {} update", principal.getName());
+        return ResponseEntity.ok(userDto);
     }
 
     @Operation(
