@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserDto> getUser(String email) {
         log.info("Get user: " + email);
-        User user = userRepository.findUserByEmailIs(email);
+        User user = userRepository.findUserByUsername(email);
         UserDto userDto = userMapper.userToUserDto(user);
         return Optional.ofNullable(userDto);
     }
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterReq update(RegisterReq user, Principal principal) {
         log.info("Update user: " + principal);
-        User optionalUser = userRepository.findUserByEmailIs(principal.getName());
+        User optionalUser = userRepository.findUserByUsername(principal.getName());
         if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }

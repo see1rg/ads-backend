@@ -103,9 +103,9 @@ public class UserController {
             }
     )
     @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Principal principal) {
-        RegisterReq updatedUser = userService.update(user, principal);
-        log.info("User {} update", principal.getName());
+    public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user,Authentication authentication) {
+        RegisterReq updatedUser = userService.update(user, authentication);
+        log.info("User {} update", authentication.getName());
         return ResponseEntity.ok(updatedUser);
     }
 

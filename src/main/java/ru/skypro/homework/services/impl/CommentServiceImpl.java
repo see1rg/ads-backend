@@ -41,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Save comment: " + newComment);
         newComment.setAds(adsRepository.findById(id).orElseThrow(()
                 -> new IllegalArgumentException("Ad not found")));
-        newComment.setAuthorId(userRepository.findUserByEmailIs(authentication.getName()));
+        newComment.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
         commentRepository.save(newComment);
         return commentMapper.commentToCommentDto(newComment);
     }
@@ -62,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("Ad not found");
         }
         Comment comment = commentMapper.commentDtoToComment(commentDto);
-        comment.setAuthorId(userRepository.findUserByEmailIs(authentication.getName()));
+        comment.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
         log.info("Update comment: " + comment);
         return commentMapper.commentToCommentDto(commentRepository.save(comment));
     }
