@@ -32,7 +32,6 @@ public class Image {
     @JoinColumn(referencedColumnName = "id")
     private User user;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

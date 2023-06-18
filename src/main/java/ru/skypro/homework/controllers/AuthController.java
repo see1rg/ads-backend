@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,19 +49,15 @@ public class AuthController {
             RegisterReq newUser = new RegisterReq();
             newUser.setUsername(req.getUsername());
             newUser.setPassword(req.getPassword());
+            userService.update(newUser);
+        }
 
-            RegisterReq registeredUser = userService.save(newUser);
-            if (registeredUser != null) {
-                if (authService.login(registeredUser.getUsername(), registeredUser.getPassword())) {
-                    return ResponseEntity.ok().build();
-                }
-            }
+        if (authService.login(req.getUsername(), req.getPassword())) {
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
 
 
     @Operation(
@@ -82,13 +79,16 @@ public class AuthController {
                 RegisterReq newUser = new RegisterReq();
                 newUser.setUsername(req.getUsername());
                 newUser.setPassword(req.getPassword());
-
-                RegisterReq registeredUser = userService.save(newUser);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                newUser.setFirstName(req.getFirstName());
+                newUser.setLastName(req.getLastName());
+                newUser.setPhone(req.getPhone());
+                newUser.setRole(role);
+                userService.save(newUser);
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
         }
-    }
-        return null;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

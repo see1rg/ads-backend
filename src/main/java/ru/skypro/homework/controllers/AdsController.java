@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.services.AdsService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -38,8 +40,8 @@ public class AdsController {
             }
     )
     @GetMapping
-    public ResponseEntity<Iterable<AdsDto>> getAllAds() {
-        return ResponseEntity.ok(adsService.getAllAds());
+    public ResponseEntity<Iterable<AdsDto>> getAllAds(@RequestParam(required = false) String title) {
+        return ResponseEntity.ok(adsService.getAllAds(title));
     }
 
     @Operation(
@@ -55,9 +57,11 @@ public class AdsController {
             }
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(@RequestParam("properties") AdsDto ads,
-                                        @RequestParam MultipartFile image) throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(adsService.addAd(ads, image));
+    public ResponseEntity<AdsDto> addAd(Authentication authentication,
+                                        @Valid @javax.validation.constraints.NotNull @NotBlank
+                                        @RequestPart("properties") AdsDto properties,
+                                        @RequestPart("image") MultipartFile image) throws IOException {
+        return ResponseEntity.ok(adsService.addAd(properties, image, authentication));
     }
 
     @Operation(
@@ -130,7 +134,7 @@ public class AdsController {
                     @ApiResponse(responseCode = "404", description = "Not Found")
             }
     )
-    @GetMapping("/ads/me")
+    @GetMapping("/me")
     public ResponseEntity<Collection<AdsDto>> getMe(Authentication authentication) {
         return ResponseEntity.ok(adsService.getMe(authentication.getName()));
     }

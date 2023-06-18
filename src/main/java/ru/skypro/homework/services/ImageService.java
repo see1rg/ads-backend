@@ -13,6 +13,8 @@ import ru.skypro.homework.repositories.UserRepository;
 
 import java.io.IOException;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -54,6 +56,11 @@ public class ImageService {
     }
 
     public byte[] getAvatar(int id) {
+        log.info("Was invoked method to get photo from user with id {}", id);
+        Image image = imageRepository.findById(id).get();
+        if (isEmpty(image)) {
+            throw new IllegalArgumentException("Image not found");
+        }
         return imageRepository.findById(id).get().getPreview();
     }
 }

@@ -2,9 +2,12 @@ package ru.skypro.homework.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dtos.RegisterReq;
+import ru.skypro.homework.dtos.Role;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.models.User;
@@ -13,6 +16,8 @@ import ru.skypro.homework.services.UserService;
 
 import java.security.Principal;
 import java.util.Optional;
+
+import static ru.skypro.homework.dtos.Role.USER;
 
 @Service
 @Transactional
@@ -37,12 +42,24 @@ public class UserServiceImpl implements UserService {
         if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }
-        optionalUser.setEmail(user.getUsername());
-        optionalUser.setFirstName(user.getFirstName());
-        optionalUser.setLastName(user.getLastName());
-        optionalUser.setPhone(user.getPhone());
-        optionalUser.setRole(user.getRole());
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(user, optionalUser);
         userMapper.userToUserDto(userRepository.save(optionalUser));
+        return user;
+    }
+
+    @Override
+    public RegisterReq update(RegisterReq user) {
+        Role role = user.getRole() == null ? USER : user.getRole();
+
+        log.info("Update user: " + user);
+        User optionalUser = userRepository.findUserByUsername(user.getUsername());
+        if (optionalUser == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(user, optionalUser);
+        optionalUser.setRole(role);
         return user;
     }
 
@@ -50,8 +67,9 @@ public class UserServiceImpl implements UserService {
     public RegisterReq save(RegisterReq user) {
         log.info("Save user: " + user);
         User newUser = new User();
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(user, newUser);
         newUser.setEmail(user.getUsername());
-        newUser.setFirstName(user.getFirstName());
         userRepository.save(newUser);
         return user;
     }

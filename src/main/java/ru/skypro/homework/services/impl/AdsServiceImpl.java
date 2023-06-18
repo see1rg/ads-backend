@@ -2,12 +2,14 @@ package ru.skypro.homework.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.models.User;
 import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
@@ -15,6 +17,9 @@ import ru.skypro.homework.services.ImageService;
 
 import java.io.IOException;
 import java.util.Collection;
+
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 
 @Service
 @Transactional
@@ -27,15 +32,22 @@ public class AdsServiceImpl implements AdsService {
     private final AdsMapper adsMapper;
 
     @Override
-    public Collection<AdsDto> getAllAds() {
+    public Collection<AdsDto> getAllAds(String title) {
+        if (!isEmpty(title)) {
+            Collection <Ads> ads = adsRepository.findByTitleLike(title);
+            log.info("Get ads with title: " + title);
+            return adsMapper.adsCollectionToAdsDto(ads);
+        }
         Collection<Ads> ads = adsRepository.findAll();
         log.info("Get all ads: " + ads);
         return adsMapper.adsCollectionToAdsDto(ads);
     }
 
     @Override
-    public AdsDto addAd(AdsDto adsDto, MultipartFile image) throws IOException {
+    public AdsDto addAd(AdsDto adsDto, MultipartFile image, Authentication authentication) throws IOException {
         Ads newAds = adsMapper.adsDtoToAds(adsDto);
+        newAds.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
+        adsRepository.save(newAds);
         log.info("Save ads: " + newAds);
         imageService.saveImage(newAds.getId(), image);
         log.info("Photo have been saved");
@@ -44,7 +56,8 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public AdsDto getAds(Integer id) {
-        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
+        Ads ads = adsRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Ads not found"));
         log.info("Get ads: " + ads);
         return adsMapper.adsToAdsDto(ads);
     }
@@ -69,8 +82,8 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Collection<AdsDto> getMe(String email) {
         log.info("Get ads: " + email);
-        Integer authorId = userRepository.findUserByUsername(email).getId();
-        Collection<Ads> ads = adsRepository.findAllByAuthorId(authorId);
+        User author = userRepository.findUserByUsername(email);
+        Collection<Ads> ads = adsRepository.findAllByAuthorId(author);
         return adsMapper.adsCollectionToAdsDto(ads);
     }
 
@@ -80,12 +93,5 @@ public class AdsServiceImpl implements AdsService {
         imageService.saveImage(id, image);
         log.info("Photo have been saved");
         return image.getBytes();
-    }
-
-    @Override
-    public Collection<AdsDto> getAdsLike(String title) {
-        Collection <Ads> ads = adsRepository.findByTitleLike(title);
-        log.info("Get ads with title: " + title);
-        return adsMapper.adsCollectionToAdsDto(ads);
     }
 }

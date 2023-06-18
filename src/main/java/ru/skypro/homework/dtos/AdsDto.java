@@ -12,4 +12,5 @@ public class AdsDto {
     private Long pk;
     private BigDecimal price;
     private String title;
+
 }
