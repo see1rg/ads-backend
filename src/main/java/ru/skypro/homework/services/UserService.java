@@ -16,4 +16,5 @@ public interface UserService {
 
     RegisterReq update(RegisterReq user, Principal principal);
 
+    RegisterReq save(RegisterReq newUser);
 }

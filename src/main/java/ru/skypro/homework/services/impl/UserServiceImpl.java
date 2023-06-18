@@ -45,4 +45,14 @@ public class UserServiceImpl implements UserService {
         userMapper.userToUserDto(userRepository.save(optionalUser));
         return user;
     }
+
+    @Override
+    public RegisterReq save(RegisterReq user) {
+        log.info("Save user: " + user);
+        User newUser = new User();
+        newUser.setEmail(user.getUsername());
+        newUser.setFirstName(user.getFirstName());
+        userRepository.save(newUser);
+        return user;
+    }
 }

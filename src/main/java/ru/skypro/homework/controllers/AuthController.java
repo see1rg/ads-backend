@@ -16,6 +16,7 @@ import ru.skypro.homework.dtos.LoginReq;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
 import ru.skypro.homework.services.AuthService;
+import ru.skypro.homework.services.UserService;
 
 import static ru.skypro.homework.dtos.Role.USER;
 
@@ -26,6 +27,7 @@ import static ru.skypro.homework.dtos.Role.USER;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     @Operation(
             operationId = "login",
@@ -42,12 +44,23 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
-        if (authService.login(req.getUsername(), req.getPassword())) {
-            return ResponseEntity.ok().build();
+        if (userService.getUser(req.getUsername()).isEmpty()) {
+            RegisterReq newUser = new RegisterReq();
+            newUser.setUsername(req.getUsername());
+            newUser.setPassword(req.getPassword());
+
+            RegisterReq registeredUser = userService.save(newUser);
+            if (registeredUser != null) {
+                if (authService.login(registeredUser.getUsername(), registeredUser.getPassword())) {
+                    return ResponseEntity.ok().build();
+                }
+            }
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+
 
 
     @Operation(
@@ -63,10 +76,19 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterReq req) {
         Role role = req.getRole() == null ? USER : req.getRole();
+
         if (authService.register(req, role)) {
-            return ResponseEntity.ok().build();
+            if (userService.getUser(req.getUsername()).isEmpty()) {
+                RegisterReq newUser = new RegisterReq();
+                newUser.setUsername(req.getUsername());
+                newUser.setPassword(req.getPassword());
+
+                RegisterReq registeredUser = userService.save(newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+    }
+        return null;
     }
 }
