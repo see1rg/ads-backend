@@ -83,7 +83,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<Optional<UserDto>> getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        log.info("User {}", authentication.getName());
+        log.info("User {} authenticated", authentication.getName());
         Optional<UserDto> user = userService.getUser(authentication.getName());
         return ResponseEntity.ok(user);
     }
@@ -127,7 +127,7 @@ public class UserController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/{id}/getImage", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @GetMapping(value = "/{id}/getImage")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
         return ResponseEntity.ok(imageService.getAvatar(id));
     }
