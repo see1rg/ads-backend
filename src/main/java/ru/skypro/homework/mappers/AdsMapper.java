@@ -4,17 +4,16 @@ import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
-import org.mapstruct.factory.Mappers;
-import org.springframework.stereotype.Component;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.models.Ads;
 
 import java.util.Collection;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AdsMapper {
     @Mapping(source = "id", target = "pk")
-    @Mapping(target = "image", expression ="java(ads.getImage().getFilePath())" )
+    @Mapping(target = "image", expression = "java(ads.getImage().getFilePath())")
     @Mapping(target = "author", expression = "java(ads.getAuthorId().getId())")
     AdsDto adsToAdsDto(Ads ads);
 

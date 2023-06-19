@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +29,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
 
+
     @Operation(
             operationId = "login",
             summary = "Авторизация пользователя",
@@ -45,17 +45,10 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
-        if (userService.getUser(req.getUsername()).isEmpty()) {
-            RegisterReq newUser = new RegisterReq();
-            newUser.setUsername(req.getUsername());
-            newUser.setPassword(req.getPassword());
-            userService.update(newUser);
-        }
-
         if (authService.login(req.getUsername(), req.getPassword())) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
@@ -75,7 +68,6 @@ public class AuthController {
         Role role = req.getRole() == null ? USER : req.getRole();
 
         if (authService.register(req, role)) {
-            if (userService.getUser(req.getUsername()).isEmpty()) {
                 RegisterReq newUser = new RegisterReq();
                 newUser.setUsername(req.getUsername());
                 newUser.setPassword(req.getPassword());
@@ -85,10 +77,7 @@ public class AuthController {
                 newUser.setRole(role);
                 userService.save(newUser);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-        }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
