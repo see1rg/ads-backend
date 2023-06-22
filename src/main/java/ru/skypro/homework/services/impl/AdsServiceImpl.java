@@ -49,8 +49,14 @@ public class AdsServiceImpl implements AdsService {
         newAds.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
         adsRepository.save(newAds);
         log.info("Save ads: " + newAds);
-        imageService.saveImage(newAds.getId(), image);
+        if (image != null) {
+            imageService.saveImage(newAds.getAuthorId().getId(), image);
+            log.info("Photo has been saved");
+        } else {
+            throw new IOException("Photo not found");
+        }
         log.info("Photo have been saved");
+
         return adsMapper.adsToAdsDto(newAds);
     }
 

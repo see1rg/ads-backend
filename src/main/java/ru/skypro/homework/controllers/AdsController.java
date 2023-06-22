@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.io.IOException;
 import java.util.Collection;
-
+@Slf4j
 @RestController
 @RequestMapping("/ads")
 @RequiredArgsConstructor
@@ -58,9 +59,9 @@ public class AdsController {
     )
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AdsDto> addAd(Authentication authentication,
-                                        @Valid @javax.validation.constraints.NotNull @NotBlank
-                                        @RequestPart("properties") AdsDto properties,
-                                        @RequestPart("image") MultipartFile image) throws IOException {
+                                        @RequestPart("image") MultipartFile image,
+                                        @RequestPart("properties") AdsDto properties) throws IOException {
+        log.info("Add ad: " + properties);
         return ResponseEntity.ok(adsService.addAd(properties, image, authentication));
     }
 

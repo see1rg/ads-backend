@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.models.Ads;
+import ru.skypro.homework.models.User;
 
 import java.util.Collection;
 
@@ -13,14 +14,20 @@ import java.util.Collection;
         unmappedTargetPolicy = ReportingPolicy.ERROR)
 public interface AdsMapper {
     @Mapping(source = "id", target = "pk")
-    @Mapping(target = "image", expression = "java(ads.getImage().getFilePath())")
+    @Mapping(target = "image", expression = "java(getImage(ads))")
     @Mapping(target = "author", expression = "java(ads.getAuthorId().getId())")
     AdsDto adsToAdsDto(Ads ads);
+
+    default String getImage(Ads ads) {
+        if (ads.getImage() == null) {
+            return null;
+        }
+        return "/ads/" + ads.getId() + "/getImage";
+    }
 
     @InheritInverseConfiguration
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "authorId", ignore = true)
     Ads adsDtoToAds(AdsDto adsDto);
-
     Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
 }

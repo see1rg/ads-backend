@@ -33,6 +33,11 @@ public class ImageService {
         imageToSave.setId(id);
         imageToSave.setAds(ads);
         imageToSave.setPreview(file.getBytes());
+        imageToSave.setMediaType(file.getContentType());
+        imageToSave.setFileSize(file.getSize());
+        imageToSave.setFilePath(file.getOriginalFilename());
+//        imageToSave.setUser(userRepository.findById(ads.getAuthorId().getId()).get());
+        System.out.println(ads);
         imageRepository.save(imageToSave);
         return imageToSave.getPreview();
     }
@@ -51,12 +56,15 @@ public class ImageService {
         imageToSave.setId(id);
         imageToSave.setUser(user);
         imageToSave.setPreview(file.getBytes());
+        imageToSave.setMediaType(file.getContentType());
+        imageToSave.setFileSize(file.getSize());
+        imageToSave.setFilePath(file.getOriginalFilename());
         imageRepository.save(imageToSave);
         return imageToSave.getPreview();
     }
 
     public byte[] getAvatar(int id) {
-        log.info("Was invoked method to get photo from user with id {}", id);
+        log.info("Was invoked method to get avatar from user with id {}", id);
         Image image = imageRepository.findById(id).get();
         if (isEmpty(image)) {
             throw new IllegalArgumentException("Image not found");

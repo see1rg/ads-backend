@@ -26,10 +26,12 @@ public class Image {
     private byte[] preview;
     @OneToOne(optional = true)
     @JoinColumn(name = "ads_id", referencedColumnName = "id")
+    @ToString.Exclude
     private Ads ads;
 
     @OneToOne(optional = true)
     @JoinColumn(referencedColumnName = "id")
+    @ToString.Exclude
     private User user;
 
     @Override

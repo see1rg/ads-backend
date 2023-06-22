@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
+import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AuthService;
 
 @Slf4j
@@ -21,20 +22,21 @@ public class AuthServiceImpl implements AuthService {
 
     private final PasswordEncoder encoder;
 
+    private final UserRepository userRepository;
 
     @Override
     public boolean login(String userName, String password) {
-        if (!manager.userExists(userName)) {
+        if (userRepository.findUserByUsername(userName) == null) {
             log.info("Пользователь с именем {} не найден", userName);
             return false;
         }
         UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword());
+        return encoder.matches(password, userDetails.getPassword()); //todo
     }
 
     @Override
     public boolean register(RegisterReq registerReq, Role role) {
-        if (manager.userExists(registerReq.getUsername())) {
+        if (userRepository.findUserByUsername(registerReq.getUsername()) != null) {
             log.info("Пользователь с именем {} уже существует", registerReq.getUsername());
             return false;
         }
@@ -49,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean changePassword(NewPasswordDto newPasswordDto, String userName) {
+    public boolean changePassword(NewPasswordDto newPasswordDto, String userName) { //todo
         if (manager.userExists(userName)) {
             String encodedNewPassword = encoder.encode(newPasswordDto.getNewPassword());
             manager.changePassword(userName, encodedNewPassword);

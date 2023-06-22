@@ -129,6 +129,7 @@ public class UserController {
 
     @GetMapping(value = "/{id}/getImage")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
+        log.info("Get avatar from user with id " + id);
         return ResponseEntity.ok(imageService.getAvatar(id));
     }
 }
