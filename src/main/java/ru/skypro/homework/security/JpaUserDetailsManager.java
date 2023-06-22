@@ -1,0 +1,78 @@
+package ru.skypro.homework.security;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.stereotype.Service;
+import ru.skypro.homework.models.User;
+import ru.skypro.homework.repositories.UserRepository;
+
+import javax.transaction.Transactional;
+import java.util.Collections;
+import java.util.Optional;
+
+@Service
+public class JpaUserDetailsManager implements UserDetailsManager {
+    @Autowired
+    private UserRepository repository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return repository.findUserByUsername(username);
+    }
+
+    @Override
+    public void createUser(UserDetails user) {
+        User userForSave = new User();
+        userForSave.setPassword(user.getPassword());
+        userForSave.setEnabled(true);
+        userForSave.setAuthorities(Collections.singleton(new AuthGrantedAuthority()));
+        userForSave.setEmail(user.getUsername());
+        userForSave.setAccountExpired(user.isAccountNonExpired());
+        userForSave.setAccountLocked(user.isAccountNonLocked());
+        userForSave.setCredentialsExpired(user.isCredentialsNonExpired());
+        repository.save((User) user);
+    }
+
+    @Override
+    public void updateUser(UserDetails user) {
+        repository.save((User) user);
+
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        User userDetails = repository.findUserByUsername(username);
+        if (userDetails == null) {
+            throw new UsernameNotFoundException("No User found for username -> " + username);
+        }
+        repository.delete(userDetails);
+    }
+
+    /**
+     * This method assumes that both oldPassword and the newPassword params
+     * are encoded with configured passwordEncoder
+     *
+     * @param oldPassword the old password of the user
+     * @param newPassword the new password of the user
+     */
+    @Override
+    @Transactional
+    public void changePassword(String oldPassword, String newPassword) {
+        Optional<Object> userDetails = repository.findByPassword(oldPassword);
+        if (userDetails.isEmpty()) {
+            throw new UsernameNotFoundException("Invalid password ");
+        }
+        User userDetails1 = (User) userDetails.get();
+        userDetails1.setPassword(newPassword);
+        repository.save(userDetails1);
+    }
+
+    @Override
+    public boolean userExists(String username) {
+        User userDetails = repository.findUserByUsername(username);
+        return userDetails != null;
+    }
+}
+

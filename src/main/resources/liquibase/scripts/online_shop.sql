@@ -4,11 +4,15 @@
 -- Таблица пользователей
 CREATE TABLE users (
                        id SERIAL PRIMARY KEY,
-                       email VARCHAR(30) NOT NULL,
-                       first_name VARCHAR(30) NOT NULL,
-                       last_name VARCHAR(30) NOT NULL,
-                       phone VARCHAR(15) NOT NULL,
-                       role VARCHAR(10) NOT NULL
+                       username VARCHAR(30) NOT NULL,
+                       password VARCHAR(500) NOT NULL,
+                       enabled BOOLEAN,
+                       first_name VARCHAR(30),
+                       last_name VARCHAR(30),
+                       account_expired BOOLEAN,
+                       credentials_expired BOOLEAN,
+                       phone VARCHAR(15),
+                       role VARCHAR(10)
 );
 
 -- Таблица объявлений
@@ -43,4 +47,11 @@ CREATE TABLE images (
                         FOREIGN KEY (user_id) REFERENCES users (id),
                         FOREIGN KEY (ads_id) REFERENCES ads (id)
 );
+
+create table authorities (
+                             username VARCHAR(50) not null,
+                             authority VARCHAR(50) not null,
+                             constraint fk_authorities_users foreign key(username) references users(username)
+);
+create unique index ix_auth_username on authorities (username,authority);
 

@@ -2,9 +2,7 @@ package ru.skypro.homework.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.skypro.homework.models.Image;
+import ru.skypro.homework.security.AuthGrantedAuthority;
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Integer> {
-    Image findImageByAds_Id(Integer id);
-
+public interface AuthGrantedAuthorityRepository extends JpaRepository<AuthGrantedAuthority, Long> {
 }
