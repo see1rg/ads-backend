@@ -45,7 +45,7 @@ public class User implements UserDetails {
     private boolean credentialsExpired;
     private boolean accountLocked;
     private boolean enabled;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @ToStringExclude
     private Set<AuthGrantedAuthority> authorities;
 

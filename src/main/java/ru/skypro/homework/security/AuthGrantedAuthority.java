@@ -16,7 +16,7 @@ public class AuthGrantedAuthority implements GrantedAuthority {
     @GeneratedValue
     private Long id;
     private String authority;
-    @ManyToOne
+    @ManyToOne (cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;

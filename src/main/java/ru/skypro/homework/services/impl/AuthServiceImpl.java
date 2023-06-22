@@ -47,19 +47,31 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
 
-        ru.skypro.homework.models.User newUser = new ru.skypro.homework.models.User();
-        newUser.setEmail("user@gmail.com");
-        newUser.setPassword(encoder.encode("password"));
-        newUser.setEnabled(true);
-        newUser.setCredentialsExpired(false);
-        newUser.setAccountExpired(false);
-        newUser.setAccountLocked(false);
+        ru.skypro.homework.models.User saveUser = new ru.skypro.homework.models.User();
+        saveUser.setEmail("user@gmail.com");
+        saveUser.setPassword(encoder.encode("password"));
+        saveUser.setEnabled(true);
+        saveUser.setCredentialsExpired(false);
+        saveUser.setAccountExpired(false);
+        saveUser.setAccountLocked(false);
 
-        AuthGrantedAuthority grantedAuthority = new AuthGrantedAuthority();
-        grantedAuthority.setAuthority("USER");
-        grantedAuthority.setUser(newUser);
-        newUser.setAuthorities(Collections.singleton(grantedAuthority));
-        authGrantedAuthorityRepository.save(grantedAuthority);
+//        AuthGrantedAuthority grantedAuthority = new AuthGrantedAuthority();
+//        grantedAuthority.setAuthority("USER");
+//        grantedAuthority.setUser(saveUser);
+//        saveUser.setAuthorities(Collections.singleton(grantedAuthority));
+//        authGrantedAuthorityRepository.save(grantedAuthority);
+
+        ru.skypro.homework.models.User userDetails = new ru.skypro.homework.models.User();
+        userDetails.setEmail(registerReq.getUsername());
+        userDetails.setPassword(encoder.encode(registerReq.getPassword()));
+        userDetails.setEnabled(true);
+        userDetails.setAccountExpired(false);
+        userDetails.setAccountLocked(false);
+        userDetails.setCredentialsExpired(false);
+        userDetails.setRole(role);
+        userDetails.setPhone(registerReq.getPhone());
+        userDetails.setFirstName(registerReq.getFirstName());
+        userDetails.setLastName(registerReq.getLastName());
 
 //        UserDetails userDetails = User.builder()
 //                .passwordEncoder(this.encoder::encode)
@@ -69,14 +81,12 @@ public class AuthServiceImpl implements AuthService {
 //                .accountExpired(false)
 //                .accountLocked(false)
 //                .credentialsExpired(false)
-////                .authorities(grantedAuthority) //todo
+//                .authorities(grantedAuthority) //todo
 //                .roles(role.name())
 //                .build();
-//        System.out.println(userDetails);
-        manager.createUser(newUser);
 
-//        ru.skypro.homework.models.User user = userMapper.registerReqToUser(registerReq);
-//        userRepository.save(user);
+        manager.createUser(saveUser);
+        manager.createUser(userDetails);
         return true;
     }
 
