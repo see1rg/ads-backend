@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
+import ru.skypro.homework.dtos.AdsDtoFull;
 import ru.skypro.homework.dtos.ResponseWrapper;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
@@ -83,8 +84,8 @@ public class AdsController {
             }
     )
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
-        log.info("(getAds) Get ads: " + id);
+    public ResponseEntity<AdsDtoFull> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
+        log.info("Get ads: " + id);
         return ResponseEntity.ok(adsService.getAds(id));
     }
 

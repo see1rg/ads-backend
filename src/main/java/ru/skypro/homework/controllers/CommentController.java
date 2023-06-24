@@ -12,9 +12,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dtos.CommentDto;
+import ru.skypro.homework.dtos.ResponseWrapper;
 import ru.skypro.homework.services.CommentService;
 
 import java.io.IOException;
+import java.util.Collection;
 
 
 @RestController
@@ -42,8 +44,9 @@ public class CommentController {
     )
 
     @GetMapping("{id}/comments")
-    public ResponseEntity<Iterable<CommentDto>> getComments(@PathVariable Integer id) {
-        return ResponseEntity.ok(commentService.getComments(id));
+    public ResponseEntity<ResponseWrapper<CommentDto>> getComments(@PathVariable Integer id) {
+        ResponseWrapper<CommentDto> ads = new ResponseWrapper<>(commentService.getComments(id));
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(

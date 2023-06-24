@@ -12,6 +12,7 @@ import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AuthService;
+import ru.skypro.homework.services.UserService;
 
 @Slf4j
 @Service
@@ -21,6 +22,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserDetailsManager manager;
 
     private final PasswordEncoder encoder;
+
+    private final UserService userService;
 
     private final UserRepository userRepository;
 
@@ -40,6 +43,16 @@ public class AuthServiceImpl implements AuthService {
             log.info("Пользователь с именем {} уже существует", registerReq.getUsername());
             return false;
         }
+
+        RegisterReq newUser = new RegisterReq();
+        newUser.setUsername(registerReq.getUsername());
+        newUser.setPassword(registerReq.getPassword());
+        newUser.setFirstName(registerReq.getFirstName());
+        newUser.setLastName(registerReq.getLastName());
+        newUser.setPhone(registerReq.getPhone());
+        newUser.setRole(role);
+        userService.save(newUser);
+
         manager.createUser(
                 User.builder()
                         .passwordEncoder(this.encoder::encode)

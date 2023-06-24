@@ -26,6 +26,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
     @OneToOne(mappedBy = "user")
+    @ToString.Exclude
     private Image avatar;
 
     @Override

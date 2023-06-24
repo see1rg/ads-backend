@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
+import ru.skypro.homework.dtos.AdsDtoFull;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.models.User;
@@ -59,11 +60,11 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
-    public AdsDto getAds(Integer id) {
+    public AdsDtoFull getAds(Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("Ads not found"));
         log.info("Get ads: " + ads);
-        return adsMapper.adsToAdsDto(ads);
+        return adsMapper.adsToAdsDtoFull(ads);
     }
 
     @Override
@@ -89,8 +90,8 @@ public class AdsServiceImpl implements AdsService {
         User author = userRepository.findUserByUsername(email);
         Collection<Ads> ads = adsRepository.findAllByAuthorId(author);
         Collection <AdsDto> adsDto = adsMapper.adsCollectionToAdsDto(ads);
-        log.info("Find ads: " + adsDto);
-        return adsMapper.adsCollectionToAdsDto(ads);//todo
+        log.info("Found ads: " + adsDto);
+        return adsDto;
     }
 
     @Override

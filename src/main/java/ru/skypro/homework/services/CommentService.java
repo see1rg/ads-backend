@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.CommentDto;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 
 public interface CommentService {
 
-    Iterable<CommentDto> getComments(Integer id);
+    Collection<CommentDto> getComments(Integer id);
 
     CommentDto addComment(Integer id, CommentDto commentDto, Authentication authentication) throws IOException;
 
