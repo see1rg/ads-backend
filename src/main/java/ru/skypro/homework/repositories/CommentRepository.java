@@ -4,10 +4,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.skypro.homework.models.Comment;
 
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.List;
 
-public interface CommentRepository extends JpaRepository<Comment,Integer> {
+public interface CommentRepository extends JpaRepository<Comment, Integer> {
     @NotNull
     List<Comment> findAll();
-    void deleteById(Long id);
+
+    Collection<Comment> findCommentsByAds_Id(Integer id);
+
+    void deleteById(Integer id);
+
 }

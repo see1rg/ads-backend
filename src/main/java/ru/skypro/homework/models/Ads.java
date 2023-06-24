@@ -16,13 +16,13 @@ import java.util.Objects;
 public class Ads {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private BigDecimal price;
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @ToString.Exclude
+    @JoinColumn(name = "user_id",
+            referencedColumnName = "id", nullable = false)
     private User authorId;
 
     @OneToOne(mappedBy = "ads")

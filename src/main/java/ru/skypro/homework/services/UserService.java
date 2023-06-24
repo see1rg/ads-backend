@@ -2,19 +2,20 @@ package ru.skypro.homework.services;
 
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 
-import java.io.IOException;
+import java.security.Principal;
 import java.util.Optional;
 
 @Service
 public interface UserService {
 
-    public UserDto update(UserDto user, String email);
+    Optional<UserDto> getUser(String name);
 
-    public Optional<UserDto> getUser(String name);
 
-    public UserDto updateUser(UserDto user, Long id);
+    RegisterReq update(RegisterReq user, Principal principal);
+    RegisterReq update(RegisterReq user);
 
+    RegisterReq save(RegisterReq newUser);
 }

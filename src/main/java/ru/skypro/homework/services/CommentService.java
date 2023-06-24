@@ -1,5 +1,6 @@
 package ru.skypro.homework.services;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.CommentDto;
 
@@ -9,12 +10,12 @@ import java.util.List;
 
 public interface CommentService {
 
-    public Iterable<CommentDto> getComments();
+    Iterable<CommentDto> getComments(Integer id);
 
-    public CommentDto addComment(CommentDto commentDto) throws IOException;
+    CommentDto addComment(Integer id, CommentDto commentDto, Authentication authentication) throws IOException;
 
-    public boolean deleteComment(Long id);
+    boolean deleteComment(Integer adId, Integer id);
 
-    public CommentDto updateComment(CommentDto commentDto, Long id);
+    CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) throws IOException;
 
 }

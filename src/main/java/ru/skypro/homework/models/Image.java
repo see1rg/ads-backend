@@ -18,7 +18,7 @@ import java.util.Objects;
 public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String filePath;
     private long fileSize;
     private String mediaType;
@@ -26,12 +26,13 @@ public class Image {
     private byte[] preview;
     @OneToOne(optional = true)
     @JoinColumn(name = "ads_id", referencedColumnName = "id")
+    @ToString.Exclude
     private Ads ads;
 
     @OneToOne(optional = true)
     @JoinColumn(referencedColumnName = "id")
+    @ToString.Exclude
     private User user;
-
 
     @Override
     public boolean equals(Object o) {
