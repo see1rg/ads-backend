@@ -14,6 +14,7 @@ import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Transactional

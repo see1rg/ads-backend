@@ -23,6 +23,14 @@ public interface AdsMapper {
     @Mapping(target = "author", expression = "java(ads.getAuthorId().getId())")
     AdsDto adsToAdsDto(Ads ads);
 
+    @Mapping(target = "authorFirstName", source = "authorId.firstName")
+    @Mapping(target = "authorLastName", source = "authorId.lastName")
+    @Mapping(target = "email", source = "authorId.email")
+    @Mapping(target = "image", expression="java(getImage(ads))")
+    @Mapping(target = "phone", source = "authorId.phone")
+    @Mapping(target = "pk", source = "id")
+    AdsDtoFull adsToAdsDtoFull(Ads ads);
+
     default String getImage(Ads ads) {
         if (ads.getImage() == null) {
             return null;
@@ -33,6 +41,7 @@ public interface AdsMapper {
     @InheritInverseConfiguration
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "authorId", ignore = true)
+    @Mapping(target = "description", ignore = true)
     Ads adsDtoToAds(AdsDto adsDto);
     Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
 }

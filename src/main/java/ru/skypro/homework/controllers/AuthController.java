@@ -68,14 +68,6 @@ public class AuthController {
         Role role = req.getRole() == null ? USER : req.getRole();
 
         if (authService.register(req, role)) {
-                RegisterReq newUser = new RegisterReq();
-                newUser.setUsername(req.getUsername());
-                newUser.setPassword(req.getPassword());
-                newUser.setFirstName(req.getFirstName());
-                newUser.setLastName(req.getLastName());
-                newUser.setPhone(req.getPhone());
-                newUser.setRole(role);
-                userService.save(newUser);
                 return ResponseEntity.status(HttpStatus.CREATED).build();
             }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

@@ -1,6 +1,9 @@
 package ru.skypro.homework.models;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -19,13 +22,15 @@ public class Ads {
     private Integer id;
     private BigDecimal price;
     private String title;
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",
             referencedColumnName = "id", nullable = false)
     private User authorId;
 
-    @OneToOne(mappedBy = "ads")
+    @ToString.Exclude
+    @OneToOne(mappedBy = "ads", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Image image;
 
     @Override
