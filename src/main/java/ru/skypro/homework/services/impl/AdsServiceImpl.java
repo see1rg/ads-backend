@@ -55,8 +55,6 @@ public class AdsServiceImpl implements AdsService {
         } else {
             throw new IOException("Photo not found");
         }
-        log.info("Photo have been saved");
-
         return adsMapper.adsToAdsDto(newAds);
     }
 
@@ -90,7 +88,9 @@ public class AdsServiceImpl implements AdsService {
         log.info("Get ads: " + email);
         User author = userRepository.findUserByUsername(email);
         Collection<Ads> ads = adsRepository.findAllByAuthorId(author);
-        return adsMapper.adsCollectionToAdsDto(ads);
+        Collection <AdsDto> adsDto = adsMapper.adsCollectionToAdsDto(ads);
+        log.info("Find ads: " + adsDto);
+        return adsMapper.adsCollectionToAdsDto(ads);//todo
     }
 
     @Override
@@ -100,4 +100,5 @@ public class AdsServiceImpl implements AdsService {
         log.info("Photo have been saved");
         return image.getBytes();
     }
+
 }

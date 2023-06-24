@@ -14,10 +14,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.dtos.AdsDto;
+import ru.skypro.homework.dtos.ResponseWrapper;
 import ru.skypro.homework.services.AdsService;
+import ru.skypro.homework.services.ImageService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Collection;
 @Slf4j
@@ -28,6 +31,7 @@ import java.util.Collection;
 public class AdsController {
 
     private final AdsService adsService;
+    private final ImageService imageService;
 
     @Operation(
             operationId = "getAllAds",
@@ -80,6 +84,7 @@ public class AdsController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<AdsDto> getAds(@Parameter(description = "Id объявления") @PathVariable Integer id) {
+        log.info("(getAds) Get ads: " + id);
         return ResponseEntity.ok(adsService.getAds(id));
     }
 
@@ -136,9 +141,12 @@ public class AdsController {
             }
     )
     @GetMapping("/me")
-    public ResponseEntity<Collection<AdsDto>> getMe(Authentication authentication) {
-        return ResponseEntity.ok(adsService.getMe(authentication.getName()));
+    public ResponseEntity<ResponseWrapper<AdsDto>> getMe(@NotNull Authentication authentication) {
+        log.info("Get me: " + authentication.getName());
+        ResponseWrapper<AdsDto> ads = new ResponseWrapper<>(adsService.getMe(authentication.getName()));
+        return ResponseEntity.ok(ads);
     }
+
 
     @Operation(
             operationId = "updateImage",
@@ -158,5 +166,11 @@ public class AdsController {
     public ResponseEntity<byte[]> updateImage(@PathVariable Integer id,
                                               @RequestParam("image") MultipartFile image) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(adsService.updateImage(id, image));
+    }
+
+    @GetMapping(value = "/{id}/getImage")
+    public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
+        log.info("Get image from ads with id " + id);
+        return ResponseEntity.ok(imageService.getImage(id));
     }
 }

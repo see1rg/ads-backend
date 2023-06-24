@@ -67,6 +67,15 @@ public class ImageService {
         log.info("Was invoked method to get avatar from user with id {}", id);
         Image image = imageRepository.findById(id).get();
         if (isEmpty(image)) {
+            throw new IllegalArgumentException("Avatar not found");
+        }
+        return imageRepository.findById(id).get().getPreview();
+    }
+
+    public byte[] getImage(int id) { //for AdsMapper
+        log.info("Was invoked method to get image from ads with id {}", id);
+        Image image = imageRepository.findImageByAds_Id(id);
+        if (isEmpty(image)) {
             throw new IllegalArgumentException("Image not found");
         }
         return imageRepository.findById(id).get().getPreview();
