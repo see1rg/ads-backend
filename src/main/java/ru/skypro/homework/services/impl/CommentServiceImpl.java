@@ -13,7 +13,10 @@ import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -37,22 +40,26 @@ public class CommentServiceImpl implements CommentService {
         if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ad not found");
         }
+        commentDto.setCreatedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
+        System.out.println(commentDto);
         Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
         newComment.setAds(adsRepository.findById(id).orElseThrow(()
                 -> new IllegalArgumentException("Ad not found")));
-        newComment.setAuthorId(userRepository.findByEmail(authentication.getName()));
+        newComment.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
         commentRepository.save(newComment);
         return commentMapper.commentToCommentDto(newComment);
     }
 
     @Override
     public boolean deleteComment(Integer adId, Integer id) {
-        if (!adsRepository.existsById(adId)) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+        if (commentOptional.isEmpty()) {
+            log.info("Comment not found");//todo не работает удаление
             return false;
         }
         log.info("Delete comment: " + id);
-        commentRepository.deleteById(id);
+        commentRepository.deleteByAds_Id(adId);
         return true;
     }
 
@@ -62,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("Ad not found");
         }
         Comment comment = commentMapper.commentDtoToComment(commentDto);
-        comment.setAuthorId(userRepository.findByEmail(authentication.getName()));
+        comment.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
         log.info("Update comment: " + comment);
         return commentMapper.commentToCommentDto(commentRepository.save(comment));
     }

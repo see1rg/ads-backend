@@ -2,15 +2,21 @@ package ru.skypro.homework.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.skypro.homework.dtos.RegisterReq;
+import ru.skypro.homework.dtos.Role;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.mappers.UserMapper;
 import ru.skypro.homework.models.User;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.UserService;
 
+import java.security.Principal;
 import java.util.Optional;
+
+import static ru.skypro.homework.dtos.Role.USER;
 
 @Service
 @Transactional
@@ -21,31 +27,49 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
-    public UserDto update(UserDto userDto, String email) {
-        User updatedUser = userMapper.userDtoToUser(userDto);
-        log.info("Update user: " + updatedUser);
-        return userMapper.userToUserDto(userRepository.save(updatedUser));
-    }
-
-    @Override
     public Optional<UserDto> getUser(String email) {
         log.info("Get user: " + email);
-        return userRepository.findUserByEmailIs(email).map(userMapper::userToUserDto);
+        User user = userRepository.findUserByUsername(email);
+        UserDto userDto = userMapper.userToUserDto(user);
+        return Optional.ofNullable(userDto);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Integer id) {
-        log.info("Update user: " + userDto);
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (!optionalUser.isPresent()) {
+    public RegisterReq update(RegisterReq user, Principal principal) {
+        log.info("Update user: " + principal);
+        User optionalUser = userRepository.findUserByUsername(principal.getName());
+        if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }
-        User existingUser = optionalUser.get();
-        existingUser.setEmail(userDto.getEmail());
-        existingUser.setFirstName(userDto.getFirstName());
-        existingUser.setLastName(userDto.getLastName());
-        existingUser.setPhone(userDto.getPhone());
+        ModelMapper mapper = new ModelMapper(); //todo заменить на mapstruct
+        mapper.map(user, optionalUser);
+        userMapper.userToUserDto(userRepository.save(optionalUser));
+        return user;
+    }
 
-        return userMapper.userToUserDto(userRepository.save(existingUser));
+    @Override
+    public RegisterReq update(RegisterReq user) {
+        Role role = user.getRole() == null ? USER : user.getRole();
+
+        log.info("Update user: " + user);
+        User optionalUser = userRepository.findUserByUsername(user.getUsername());
+        if (optionalUser == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(user, optionalUser);
+        optionalUser.setRole(role);
+        return user;
+    }
+
+    @Override
+    public RegisterReq save(RegisterReq user) {
+        log.info("Save user: " + user);
+        User newUser = new User(); // todo заменить на mapstruct
+        ModelMapper mapper = new ModelMapper();
+        mapper.map(user, newUser);
+        newUser.setEmail(user.getUsername());
+        userRepository.save(newUser);
+        return user;
     }
 }

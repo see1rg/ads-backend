@@ -13,6 +13,8 @@ import ru.skypro.homework.repositories.UserRepository;
 
 import java.io.IOException;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -31,12 +33,17 @@ public class ImageService {
         imageToSave.setId(id);
         imageToSave.setAds(ads);
         imageToSave.setPreview(file.getBytes());
+        imageToSave.setMediaType(file.getContentType());
+        imageToSave.setFileSize(file.getSize());
+        imageToSave.setFilePath(file.getOriginalFilename());
+//        imageToSave.setUser(userRepository.findById(ads.getAuthorId().getId()).get());
+        System.out.println(ads);
         imageRepository.save(imageToSave);
         return imageToSave.getPreview();
     }
 
     public byte[] saveAvatar(String email, MultipartFile file) throws IOException {
-        Integer id = userRepository.findUserByEmailIs(email).get().getId();
+        Integer id = userRepository.findUserByUsername(email).getId();
         log.info("Was invoked method to upload photo to user with id {}", id);
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
@@ -49,11 +56,28 @@ public class ImageService {
         imageToSave.setId(id);
         imageToSave.setUser(user);
         imageToSave.setPreview(file.getBytes());
+        imageToSave.setMediaType(file.getContentType());
+        imageToSave.setFileSize(file.getSize());
+        imageToSave.setFilePath(file.getOriginalFilename());
         imageRepository.save(imageToSave);
         return imageToSave.getPreview();
     }
 
     public byte[] getAvatar(int id) {
+        log.info("Was invoked method to get avatar from user with id {}", id);
+        Image image = imageRepository.findById(id).get();
+        if (isEmpty(image)) {
+            throw new IllegalArgumentException("Avatar not found");
+        }
+        return imageRepository.findById(id).get().getPreview();
+    }
+
+    public byte[] getImage(int id) { //for AdsMapper
+        log.info("Was invoked method to get image from ads with id {}", id);
+        Image image = imageRepository.findImageByAds_Id(id);
+        if (isEmpty(image)) {
+            throw new IllegalArgumentException("Image not found");
+        }
         return imageRepository.findById(id).get().getPreview();
     }
 }
