@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }
-        ModelMapper mapper = new ModelMapper();
+        ModelMapper mapper = new ModelMapper(); //todo заменить на mapstruct
         mapper.map(user, optionalUser);
         userMapper.userToUserDto(userRepository.save(optionalUser));
         return user;
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public RegisterReq save(RegisterReq user) {
         log.info("Save user: " + user);
-        User newUser = new User();
+        User newUser = new User(); // todo заменить на mapstruct
         ModelMapper mapper = new ModelMapper();
         mapper.map(user, newUser);
         newUser.setEmail(user.getUsername());

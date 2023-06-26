@@ -19,11 +19,9 @@ import ru.skypro.homework.dtos.ResponseWrapper;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Collection;
+
 @Slf4j
 @RestController
 @RequestMapping("/ads")
@@ -46,8 +44,9 @@ public class AdsController {
             }
     )
     @GetMapping
-    public ResponseEntity<Iterable<AdsDto>> getAllAds(@RequestParam(required = false) String title) {
-        return ResponseEntity.ok(adsService.getAllAds(title));
+    public ResponseEntity<ResponseWrapper<AdsDto>> getAllAds(@RequestParam(required = false) String title) {
+        ResponseWrapper<AdsDto> ads = new ResponseWrapper<>(adsService.getAllAds(title));
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(

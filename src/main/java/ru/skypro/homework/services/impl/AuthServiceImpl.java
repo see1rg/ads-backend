@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         UserDetails userDetails = manager.loadUserByUsername(userName);
-        return encoder.matches(password, userDetails.getPassword()); //todo
+        return encoder.matches(password, userDetails.getPassword()); //todo password
     }
 
     @Override
@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean changePassword(NewPasswordDto newPasswordDto, String userName) { //todo
+    public boolean changePassword(NewPasswordDto newPasswordDto, String userName) { //todo password
         if (manager.userExists(userName)) {
             String encodedNewPassword = encoder.encode(newPasswordDto.getNewPassword());
             manager.changePassword(userName, encodedNewPassword);

@@ -13,6 +13,8 @@ import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -38,6 +40,8 @@ public class CommentServiceImpl implements CommentService {
         if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ad not found");
         }
+        commentDto.setCreatedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
+        System.out.println(commentDto);
         Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
         newComment.setAds(adsRepository.findById(id).orElseThrow(()
@@ -49,11 +53,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean deleteComment(Integer adId, Integer id) {
-        if (!adsRepository.existsById(adId)) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+        if (commentOptional.isEmpty()) {
+            log.info("Comment not found");//todo не работает удаление
             return false;
         }
         log.info("Delete comment: " + id);
-        commentRepository.deleteById(id);
+        commentRepository.deleteByAds_Id(adId);
         return true;
     }
 
