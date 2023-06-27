@@ -13,7 +13,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@Table(name = "users")
+@Table(name = "users_profile")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

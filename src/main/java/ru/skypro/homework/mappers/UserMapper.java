@@ -3,6 +3,7 @@ package ru.skypro.homework.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
+import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.models.User;
 
@@ -22,5 +23,13 @@ public interface UserMapper {
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "role", ignore = true)
     User userDtoToUser(UserDto userDto);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "email", source = "registerReq.username")
+    @Mapping(target = "firstName", source = "registerReq.firstName")
+    @Mapping(target = "lastName", source = "registerReq.lastName")
+    @Mapping(target = "phone", source = "registerReq.phone")
+    User updateUserFromRegisterReq(RegisterReq registerReq, User user);
 
 }

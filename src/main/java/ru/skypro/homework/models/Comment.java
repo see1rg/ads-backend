@@ -20,7 +20,7 @@ public class Comment {
     private LocalDateTime createdAt;
     private String text;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ads_id")
     @ToString.Exclude
     private Ads ads;

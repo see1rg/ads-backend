@@ -2,7 +2,7 @@
 
 -- changeSet see1rg:1
 -- Таблица пользователей
-CREATE TABLE users (
+CREATE TABLE users_profile (
                        id SERIAL PRIMARY KEY,
                        email VARCHAR(30) NOT NULL,
                        first_name VARCHAR(30) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE ads (
                      price DECIMAL(10, 2),
                      title VARCHAR(255) NOT NULL,
                      author_id BIGINT NOT NULL,
-                     FOREIGN KEY (author_id) REFERENCES users(id)
+                     FOREIGN KEY (author_id) REFERENCES users_profile(id)
 );
 
 -- Таблица комментариев
@@ -28,7 +28,7 @@ CREATE TABLE comments (
                           ads_id BIGINT NOT NULL,
                           author_id BIGINT NOT NULL,
                           FOREIGN KEY (ads_id) REFERENCES ads(id),
-                          FOREIGN KEY (author_id) REFERENCES users(id)
+                          FOREIGN KEY (author_id) REFERENCES users_profile(id)
 );
 
 -- Таблица картинок
@@ -40,7 +40,7 @@ CREATE TABLE images (
                         preview BYTEA,
                         user_id INT,
                         ads_id INT,
-                        FOREIGN KEY (user_id) REFERENCES users (id),
+                        FOREIGN KEY (user_id) REFERENCES users_profile(id),
                         FOREIGN KEY (ads_id) REFERENCES ads (id)
 );
 

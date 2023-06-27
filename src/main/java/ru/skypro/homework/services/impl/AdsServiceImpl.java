@@ -2,7 +2,6 @@ package ru.skypro.homework.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,10 +93,9 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDto updateAds(AdsDto adsDto, Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
-        ModelMapper mapper = new ModelMapper();
-        mapper.map(adsDto, ads); // TODO: 25.06.2023 заменить на mapstruct
+        Ads adsToUpdate = adsMapper.adsDtoToAds(adsDto);
         log.info("Update ads: " + ads);
-        return adsMapper.adsToAdsDto(adsRepository.save(ads));
+        return adsMapper.adsToAdsDto(adsRepository.save(adsToUpdate));
     }
 
     @Override
