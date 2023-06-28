@@ -46,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
 
+        log.info("Register user: " + registerReq + " role: " + role);
         RegisterReq newUser = new RegisterReq();
         newUser.setUsername(registerReq.getUsername());
         newUser.setPassword(registerReq.getPassword());

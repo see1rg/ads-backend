@@ -169,7 +169,7 @@ public class AdsController {
     }
 
     @GetMapping(value = "/{id}/getImage")
-    public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) {
+    public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) throws IOException {
         log.info("Get image from ads with id " + id);
         return ResponseEntity.ok(imageService.getImage(id));
     }

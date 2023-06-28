@@ -25,7 +25,7 @@ public interface UserMapper {
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "role", source = "registerReq.role")
     @Mapping(target = "email", source = "registerReq.username")
     @Mapping(target = "firstName", source = "registerReq.firstName")
     @Mapping(target = "lastName", source = "registerReq.lastName")

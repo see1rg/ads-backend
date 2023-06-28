@@ -4,6 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.skypro.homework.models.Image;
 
 public interface ImageRepository extends JpaRepository<Image, Integer> {
-    Image findImageByAds_Id(Integer id);
 
 }
