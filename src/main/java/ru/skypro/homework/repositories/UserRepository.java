@@ -10,7 +10,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findById(Integer id);
 
-    @Query(value = "SELECT * FROM users WHERE email = ?1", nativeQuery = true)
+    @Query(value = "SELECT * FROM users_profiles WHERE email = ?1", nativeQuery = true)
     User findUserByUsername(String email);
 
 }

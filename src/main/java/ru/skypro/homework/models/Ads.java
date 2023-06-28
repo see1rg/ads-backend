@@ -25,7 +25,7 @@ public class Ads {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",
+    @JoinColumn(name = "users_profiles_id",
             referencedColumnName = "id", nullable = false)
     private User authorId;
 

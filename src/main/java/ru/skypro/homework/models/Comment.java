@@ -26,7 +26,7 @@ public class Comment {
     private Ads ads;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "users_profiles_id", nullable = false)
     @ToString.Exclude
     private User authorId;
 
