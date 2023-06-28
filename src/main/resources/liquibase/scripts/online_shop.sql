@@ -2,6 +2,14 @@
 
 -- changeSet see1rg:1
 -- Таблица пользователей
+
+CREATE TABLE users
+(
+    username varchar(50)  not null primary key,
+    password varchar(300) not null,
+    enabled  boolean      not null
+);
+
 CREATE TABLE users_profiles(
                        id SERIAL PRIMARY KEY,
                        email VARCHAR(30) NOT NULL,
@@ -11,13 +19,6 @@ CREATE TABLE users_profiles(
                        role VARCHAR(10) NOT NULL,
                        avatar_id INT,
                         FOREIGN KEY (email) REFERENCES users (username)
-);
-
-CREATE TABLE users
-(
-    username varchar(50)  not null primary key,
-    password varchar(300) not null,
-    enabled  boolean      not null
 );
 
 CREATE TABLE authorities (
