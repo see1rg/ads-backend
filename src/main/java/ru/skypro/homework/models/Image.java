@@ -24,12 +24,12 @@ public class Image {
     private String mediaType;
     @Lob
     private byte[] preview;
-    @OneToOne(optional = true)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "ads_id", referencedColumnName = "id")
     @ToString.Exclude
     private Ads ads;
 
-    @OneToOne(optional = true)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(referencedColumnName = "id")
     @ToString.Exclude
     private User user;

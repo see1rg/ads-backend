@@ -83,7 +83,7 @@ public class AdsServiceImpl implements AdsService {
         }
         Collection<Comment> commentsToDelete = commentRepository.findCommentsByAds_Id(id);
         log.info("Delete comments: " + commentsToDelete);
-        for (Comment comment : commentsToDelete) { //todo ошибка при удалении
+        for (Comment comment : commentsToDelete) {
             commentService.deleteComment(id, comment.getId());
         }
         adsRepository.deleteById(id);
