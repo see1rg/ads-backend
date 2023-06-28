@@ -38,6 +38,9 @@ public class ImageService {
             throw new IllegalArgumentException("File is empty");
         }
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
+        if (ads.getImage() != null) {
+            imageRepository.delete(ads.getImage());
+        }
         Image imageToSave = new Image();
         imageToSave.setAds(ads);
         return getBytes(file, imageToSave);
@@ -53,6 +56,9 @@ public class ImageService {
             throw new IllegalArgumentException("User not found");
         }
         User user = userRepository.findById(id).get();
+        if (user.getAvatar() != null) {
+            imageRepository.delete(user.getAvatar());
+        }
         Image imageToSave = new Image();
         imageToSave.setUser(user);
         return getBytes(file, imageToSave);
