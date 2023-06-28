@@ -20,13 +20,13 @@ public class Comment {
     private LocalDateTime createdAt;
     private String text;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "ads_id")
     @ToString.Exclude
     private Ads ads;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "users_profiles_id", nullable = false)
     @ToString.Exclude
     private User authorId;
 

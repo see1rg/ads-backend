@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dtos.NewPasswordDto;
 import ru.skypro.homework.dtos.RegisterReq;
 import ru.skypro.homework.dtos.Role;
@@ -17,6 +18,7 @@ import ru.skypro.homework.services.UserService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final UserDetailsManager manager;
