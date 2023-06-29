@@ -34,9 +34,6 @@ public class ImageService {
 
     public byte[] saveImage(Integer id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to ads with id {}", id);
-        if (file.isEmpty()) {
-            throw new IllegalArgumentException("File is empty");
-        }
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         if (ads.getImage() != null) {
             imageRepository.delete(ads.getImage());

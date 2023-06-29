@@ -55,11 +55,11 @@ public class CommentServiceImpl implements CommentService {
     public boolean deleteComment(Integer adId, Integer id) {
         Optional<Comment> commentOptional = commentRepository.findById(id);
         if (commentOptional.isEmpty()) {
-            log.info("Comment not found");//todo не работает удаление
+            log.info("Comment not found");
             return false;
         }
         log.info("Delete comment: " + id);
-        commentRepository.deleteByAds_Id(adId);
+        commentRepository.deleteById(id);
         return true;
     }
 

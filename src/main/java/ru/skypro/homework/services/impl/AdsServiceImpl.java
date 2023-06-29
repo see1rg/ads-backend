@@ -10,13 +10,10 @@ import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.dtos.AdsDtoFull;
 import ru.skypro.homework.mappers.AdsMapper;
 import ru.skypro.homework.models.Ads;
-import ru.skypro.homework.models.Comment;
 import ru.skypro.homework.models.User;
 import ru.skypro.homework.repositories.AdsRepository;
-import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
-import ru.skypro.homework.services.CommentService;
 import ru.skypro.homework.services.ImageService;
 
 import java.io.IOException;
@@ -35,8 +32,6 @@ public class AdsServiceImpl implements AdsService {
     private final ImageService imageService;
     private final UserRepository userRepository;
     private final AdsMapper adsMapper;
-    private final CommentService commentService;
-    private final CommentRepository commentRepository;
 
     @Override
     public Collection<AdsDto> getAllAds(String title) {
@@ -57,7 +52,7 @@ public class AdsServiceImpl implements AdsService {
         adsRepository.save(newAds);//todo
         log.info("Save ads: " + newAds);
         if (image != null) {
-            imageService.saveImage(newAds.getAuthorId().getId(), image);
+            imageService.saveImage(newAds.getId(), image);
             log.info("Photo has been saved");
         } else {
             throw new IOException("Photo not found");
@@ -75,16 +70,11 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public boolean removeAd(Integer id) {
-        log.info("Delete ads: " + id);
         Optional<Ads> adOptional = adsRepository.findById(id);
+        log.info("Delete ads: " + adOptional);
         if (adOptional.isEmpty()) {
             log.info("Ad not found");
             return false;
-        }
-        Collection<Comment> commentsToDelete = commentRepository.findCommentsByAds_Id(id);
-        log.info("Delete comments: " + commentsToDelete);
-        for (Comment comment : commentsToDelete) {
-            commentService.deleteComment(id, comment.getId());
         }
         adsRepository.deleteById(id);
         return true;
