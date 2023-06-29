@@ -35,10 +35,16 @@ public class ImageService {
     public byte[] saveImage(Integer id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to ads with id {}", id);
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
-        if (ads.getImage() != null) {
-            imageRepository.delete(ads.getImage());
+        if (isEmpty(file)) {
+            throw new IllegalArgumentException("File is empty");
         }
-        Image imageToSave = new Image();
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("Ads not found");
+        }
+        Image imageToSave = imageRepository.findByAds(ads);
+        if (imageToSave == null) {
+            imageToSave = new Image();
+        }
         imageToSave.setAds(ads);
         return getBytes(file, imageToSave);
     }
@@ -53,10 +59,10 @@ public class ImageService {
             throw new IllegalArgumentException("User not found");
         }
         User user = userRepository.findById(id).get();
-        if (user.getAvatar() != null) {
-            imageRepository.delete(user.getAvatar());
+        Image imageToSave = imageRepository.findByUser(user);
+        if (imageToSave == null) {
+            imageToSave = new Image();
         }
-        Image imageToSave = new Image();
         imageToSave.setUser(user);
         return getBytes(file, imageToSave);
     }
@@ -74,14 +80,11 @@ public class ImageService {
     public String uploadImage(String name, MultipartFile file) {
         log.debug("Was invoked method to upload image");
 
-
         String extension = Optional.ofNullable(file.getOriginalFilename()).
                 map(s -> s.substring(file.getOriginalFilename().lastIndexOf("."))).
                 orElse(" ");
 
         Path filePath = Path.of(imageDir, name + extension);
-        System.out.println(filePath);
-        System.out.println(Paths.get(name + extension).toAbsolutePath());
         try {
             Files.createDirectories(filePath.getParent());
             Files.deleteIfExists(filePath);

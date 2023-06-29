@@ -38,6 +38,7 @@ public interface AdsMapper {
     @InheritInverseConfiguration
     @Mapping(target = "image", ignore = true)
     @Mapping(target = "authorId.id", source = "author")
+    @Mapping(target = "comments", ignore = true)
     Ads adsDtoToAds(AdsDto adsDto);
 
     Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
