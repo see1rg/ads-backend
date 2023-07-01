@@ -1,6 +1,8 @@
 package ru.skypro.homework.configs;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -13,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     private static final String[] AUTH_WHITELIST = { //  массив URL-шаблонов, которые разрешены без аутентификации.
@@ -22,37 +25,26 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/login",
             "/register",
-            "/ads"
+            "/ads",
+            "/ads/*/image",
+            "/users/*/image"
     };
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user =
-                User.builder()
-                        .username("user@gmail.com")
-                        .password("password")
-                        .passwordEncoder((plainText) -> passwordEncoder().encode(plainText))
-                        .roles("USER")
-                        .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf()
+      return   http.csrf()
                 .disable()
                 .authorizeHttpRequests(
                         (authorization) ->
                                 authorization
-                                        .mvcMatchers(AUTH_WHITELIST)
+                                        .mvcMatchers(HttpMethod.GET,AUTH_WHITELIST)
                                         .permitAll()
-                                        .mvcMatchers("/ads/**", "/users/**")
-                                        .authenticated()
+//                                        .mvcMatchers("/ads/**", "/users/**")
+//                                        .authenticated()
                 )
                 .cors()
                 .and()
-                .httpBasic(withDefaults());
-        return http.build();
+                .httpBasic(withDefaults()).build();
     }
 
     @Bean

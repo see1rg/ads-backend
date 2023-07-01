@@ -1,16 +1,11 @@
 package ru.skypro.homework.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,19 +31,6 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder;
 
-    @Operation(
-            operationId = "setPassword",
-            summary = "Обновление пароля",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = NewPasswordDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
     @PostMapping("/set_password")
     public ResponseEntity<NewPasswordDto> setPassword(@RequestBody NewPasswordDto newPassword,
                                                       Authentication authentication) {
@@ -66,41 +48,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
-    @Operation(
-            operationId = "getUser",
-            summary = "Получить информацию об авторизованном пользователе",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))
-                    }),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
     @GetMapping("/me")
-    public ResponseEntity<Optional<UserDto>> getUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<Optional<UserDto>> getUser(Authentication authentication) {
         log.info("User {} authenticated", authentication.getName());
         Optional<UserDto> user = userService.getUser(authentication.getName());
         return ResponseEntity.ok(user);
     }
 
-    @Operation(
-            operationId = "updateUser",
-            summary = "Обновить информацию об авторизованном пользователе",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK", content = {
-                            @Content(mediaType = "*/*", schema = @Schema(implementation = UserDto.class))
-                    }),
-                    @ApiResponse(responseCode = "204", description = "No Content"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
     @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RegisterReq> updateUser(@RequestBody RegisterReq user, Authentication authentication) {
         RegisterReq updatedUser = userService.update(user, authentication);
@@ -108,25 +62,14 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-
-    @Operation(
-            operationId = "updateUserImage",
-            summary = "Обновить аватар авторизованного пользователя",
-            tags = {"Пользователи"},
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK"),
-                    @ApiResponse(responseCode = "404", description = "Not Found")
-            }
-    )
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image) throws IOException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<Void> updateUserImage(@RequestParam("image") MultipartFile image, Authentication authentication) throws IOException {
         log.info("User {} update avatar", authentication.getName());
         imageService.saveAvatar(authentication.getName(), image);
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping(value = "/{id}/getImage")
+    @GetMapping(value = "/{id}/image")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) throws IOException {
         log.info("Get avatar from user with id " + id);
         return ResponseEntity.ok(imageService.getAvatar(id));
