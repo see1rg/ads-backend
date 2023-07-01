@@ -1,11 +1,11 @@
 package ru.skypro.homework.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +35,7 @@ public class AdsController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AdsDto> addAd(Authentication authentication,
+    public ResponseEntity<AdsDto> addAd(@NotNull Authentication authentication,
                                         @RequestPart("image") MultipartFile image,
                                         @RequestPart("properties") AdsDto properties) throws IOException {
         log.info("Add ad: " + properties);
@@ -43,13 +43,14 @@ public class AdsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdsDtoFull> getAds( @PathVariable Integer id) {
+    public ResponseEntity<AdsDtoFull> getAds(@PathVariable Integer id) {
         log.info("Get ads: " + id);
         return ResponseEntity.ok(adsService.getAds(id));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#id).email == authentication.principal.username")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeAd(@Parameter(description = "Id объявления") @PathVariable Integer id) {
+    public ResponseEntity<Void> removeAd(@PathVariable Integer id) {
         boolean result = adsService.removeAd(id);
         if (result) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -58,6 +59,7 @@ public class AdsController {
         }
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#id).email == authentication.principal.username")
     @PatchMapping("/{id}")
     public ResponseEntity<AdsDto> updateAds(@RequestBody AdsDto ads, @PathVariable Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(adsService.updateAds(ads, id));
@@ -76,7 +78,7 @@ public class AdsController {
         return ResponseEntity.status(HttpStatus.OK).body(adsService.updateImage(id, image));
     }
 
-    @GetMapping(value = "/{id}/getImage")
+    @GetMapping(value = "/{id}/image")
     public ResponseEntity<byte[]> getImage(@PathVariable("id") int id) throws IOException {
         log.info("Get image from ads with id " + id);
         return ResponseEntity.ok(imageService.getImage(id));

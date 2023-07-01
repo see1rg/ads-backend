@@ -32,7 +32,7 @@ public interface AdsMapper {
         if (ads.getImage() == null) {
             return null;
         }
-        return "/ads/" + ads.getId() + "/getImage";
+        return "/ads/" + ads.getId() + "/image";
     }
 
     @InheritInverseConfiguration
