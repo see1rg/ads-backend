@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import ru.skypro.homework.dtos.RegisterReq;
+import ru.skypro.homework.dtos.SecurityUserDto;
 import ru.skypro.homework.dtos.UserDto;
 import ru.skypro.homework.models.User;
 
@@ -17,11 +18,12 @@ public interface UserMapper {
         if (user.getAvatar() == null) {
             return null;
         }
-        return "/users/" + user.getId() + "/getImage";
+        return "/users/" + user.getId() + "/image";
     }
 
     @Mapping(target = "avatar", ignore = true)
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "password", ignore = true)
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "id", ignore = true)
@@ -30,6 +32,9 @@ public interface UserMapper {
     @Mapping(target = "firstName", source = "registerReq.firstName")
     @Mapping(target = "lastName", source = "registerReq.lastName")
     @Mapping(target = "phone", source = "registerReq.phone")
+    @Mapping(target = "password",source = "registerReq.password")
     User updateUserFromRegisterReq(RegisterReq registerReq, User user);
+
+    SecurityUserDto toSecurityDto(User user);
 
 }

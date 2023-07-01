@@ -38,7 +38,7 @@ public class ImageService {
         if (isEmpty(file)) {
             throw new IllegalArgumentException("File is empty");
         }
-        if (!userRepository.existsById(id)) {
+        if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ads not found");
         }
         Image imageToSave = imageRepository.findByAds(ads);
