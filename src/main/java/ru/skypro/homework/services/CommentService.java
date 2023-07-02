@@ -1,15 +1,15 @@
 package ru.skypro.homework.services;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 import ru.skypro.homework.dtos.CommentDto;
+import ru.skypro.homework.models.Comment;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 
 public interface CommentService {
+    Comment findCommentById(Integer id);
 
     Collection<CommentDto> getComments(Integer id);
 

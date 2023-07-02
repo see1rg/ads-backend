@@ -14,5 +14,6 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     Collection<Comment> findCommentsByAds_Id(Integer id);
 
     void deleteById(Integer id);
+    Comment findCommentById(Integer id);
 
 }

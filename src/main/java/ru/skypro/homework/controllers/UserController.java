@@ -34,16 +34,13 @@ public class UserController {
                                                       @NotNull Authentication authentication) {
         log.info("Set password: " + newPassword);
         Optional<UserDto> user = userService.getUser(authentication.getName());
-        if (!authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         if (authService.changePassword(newPassword, authentication.getName())) {
             return ResponseEntity.ok(new NewPasswordDto());
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @GetMapping("/me")

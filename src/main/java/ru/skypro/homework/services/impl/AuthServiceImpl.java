@@ -63,9 +63,12 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public boolean changePassword(NewPasswordDto newPasswordDto, String userName) {
         log.info("Change password for user: " + userName);
-           User user = userRepository.findByEmailIgnoreCase(userName).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmailIgnoreCase(userName).orElseThrow(UserNotFoundException::new);
+        if (encoder.matches(newPasswordDto.getPassword(), user.getPassword())) {
             user.setPassword(encoder.encode(newPasswordDto.getNewPassword()));
             userRepository.save(user);
             return true;
+        }
+        return false;
     }
 }
