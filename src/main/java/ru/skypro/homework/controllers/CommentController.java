@@ -35,8 +35,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.addComment(id, commentDto, authentication));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#adId) == #authentication.name" +
-            " or  @commentServiceImpl.findCommentById(#commentId).authorId.email == #authentication.name")
+    @PreAuthorize("hasAuthority('ADMIN') or  @commentServiceImpl.findCommentById(#commentId).authorId.email == #authentication.name")
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         boolean result = commentService.deleteComment(adId, commentId);
