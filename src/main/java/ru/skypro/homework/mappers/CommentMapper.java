@@ -17,6 +17,7 @@ public interface CommentMapper {
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "createdAt", expression = "java(mapLocalDateTimeToUnixTime(comment.getCreatedAt()))")
     @Mapping(target = "authorFirstName", source = "authorId.firstName")
+    @Mapping(target = "authorLastName", source = "authorId.lastName")
     CommentDto commentToCommentDto(Comment comment);
 
     @InheritInverseConfiguration

@@ -46,7 +46,7 @@ public class ImageService {
             imageToSave = new Image();
         }
         imageToSave.setAds(ads);
-        return getBytes(file, imageToSave);
+        return saveImageAndGetBytes(file, imageToSave);
     }
 
     public byte[] saveAvatar(String email, MultipartFile file) throws IOException {
@@ -64,10 +64,10 @@ public class ImageService {
             imageToSave = new Image();
         }
         imageToSave.setUser(user);
-        return getBytes(file, imageToSave);
+        return saveImageAndGetBytes(file, imageToSave);
     }
 
-    private byte[] getBytes(MultipartFile file, Image imageToSave) throws IOException {
+    private byte[] saveImageAndGetBytes(MultipartFile file, Image imageToSave) throws IOException {
         imageToSave.setPreview(file.getBytes());
         imageToSave.setMediaType(file.getContentType());
         imageToSave.setFileSize(file.getSize());

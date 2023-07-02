@@ -29,6 +29,11 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
 
     @Override
+    public Comment findCommentById(Integer id) {
+        return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+    }
+
+    @Override
     public Collection<CommentDto> getComments(Integer id) {
         Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
         log.info("Get all comments for ad: " + id);
@@ -41,7 +46,6 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalArgumentException("Ad not found");
         }
         commentDto.setCreatedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
-        System.out.println(commentDto);
         Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
         newComment.setAds(adsRepository.findById(id).orElseThrow(()

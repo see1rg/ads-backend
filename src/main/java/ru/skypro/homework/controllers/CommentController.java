@@ -1,6 +1,5 @@
 package ru.skypro.homework.controllers;
 
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +29,14 @@ public class CommentController {
     }
 
     @PostMapping("{id}/comments")
-    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id, @Parameter(description = "Необходимо корректно" +
-            " заполнить комментарий", example = "Тест"
-    ) @RequestBody CommentDto commentDto) throws IOException {
+    public ResponseEntity<CommentDto> addComment(@PathVariable Integer id,
+                                                 @RequestBody CommentDto commentDto) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.addComment(id, commentDto, authentication));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#adId).email == #authentication.name")
+    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#adId) == #authentication.name" +
+            " or  @commentServiceImpl.findCommentById(#commentId).authorId.email == #authentication.name")
     @DeleteMapping("{adId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Integer adId, @PathVariable Integer commentId) {
         boolean result = commentService.deleteComment(adId, commentId);
@@ -48,7 +47,8 @@ public class CommentController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or @adsServiceImpl.getAds(#adId).email == #authentication.name")
+    @PreAuthorize("hasAuthority('ADMIN') or @commentServiceImpl.findCommentById(#commentId).authorId.email" +
+            " == #authentication.name")
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDto> updateComment(@RequestBody CommentDto commentDto, @PathVariable Integer adId,
                                                     @PathVariable Integer commentId,
