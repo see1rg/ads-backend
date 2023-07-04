@@ -111,6 +111,10 @@ public class ImageService {
         if (isEmpty(user)) {
             throw new IllegalArgumentException("User not found");
         }
+        Image filePath = user.get().getAvatar();
+        if (filePath == null) {
+            return null;
+        }
         return Files.readAllBytes(Paths.get(Objects.requireNonNull(user.get().getAvatar().getFilePath())));
     }
 
