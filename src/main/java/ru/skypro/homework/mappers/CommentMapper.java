@@ -5,6 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.skypro.homework.dtos.CommentDto;
 import ru.skypro.homework.models.Comment;
+import ru.skypro.homework.models.Image;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -16,11 +17,16 @@ import java.util.stream.Collectors;
 public interface CommentMapper {
     @Mapping(target = "pk", source = "id")
     @Mapping(target = "createdAt", expression = "java(mapLocalDateTimeToUnixTime(comment.getCreatedAt()))")
-    @Mapping(target = "authorName", source = "authorId.firstName")
+    @Mapping(target = "authorFirstName", source = "authorId.firstName")
+    @Mapping(target = "authorLastName", source = "authorId.lastName")
     @Mapping(target = "authorImage", expression = "java(image(comment))")
     CommentDto commentToCommentDto(Comment comment);
     default String image(Comment comment) {
         int id = comment.getAuthorId().getId();
+        Image filePath = comment.getAuthorId().getAvatar();
+        if (filePath == null) {
+            return null;
+        }
         return "/users/" + id + "/image";
     }
 
