@@ -16,6 +16,7 @@ import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
@@ -76,6 +77,15 @@ public class AdsServiceImpl implements AdsService {
             log.info("Ad not found");
             return false;
         }
+
+        Ads adsToDelete = adsRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Ads not found"));
+        String filePath = adsToDelete.getImage().getFilePath();
+        File fileToDelete = new File(filePath);
+        if (fileToDelete.exists()) {
+            fileToDelete.delete();
+        }
+
         adsRepository.deleteById(id);
         return true;
     }

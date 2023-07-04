@@ -12,6 +12,7 @@ import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.repositories.ImageRepository;
 import ru.skypro.homework.repositories.UserRepository;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,10 +59,18 @@ public class ImageService {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found");
         }
+
         User user = userRepository.findById(id).get();
+
         Image imageToSave = imageRepository.findByUser(user);
         if (imageToSave == null) {
             imageToSave = new Image();
+        } else {
+            String filePath = user.getAvatar().getFilePath();
+            File fileToDelete = new File(filePath);
+            if (fileToDelete.exists()) {
+                fileToDelete.delete();
+            }
         }
         imageToSave.setUser(user);
         return saveImageAndGetBytes(file, imageToSave);
