@@ -16,8 +16,10 @@ import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.AdsService;
 import ru.skypro.homework.services.ImageService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -35,7 +37,7 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public Collection<AdsDto> getAllAds(String title) {
         if (!isEmpty(title)) {
-            Collection <Ads> ads = adsRepository.findByTitleLike(title);
+            Collection<Ads> ads = adsRepository.findByTitleLike(title);
             log.info("Get ads with title: " + title);
             return adsMapper.adsCollectionToAdsDto(ads);
         }
@@ -48,10 +50,10 @@ public class AdsServiceImpl implements AdsService {
     public AdsDto addAd(AdsDto adsDto, MultipartFile image, Authentication authentication) throws IOException {
         Ads newAds = adsMapper.adsDtoToAds(adsDto);
         newAds.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
-        adsRepository.save(newAds);
+        adsRepository.save(newAds);//todo
         log.info("Save ads: " + newAds);
         if (image != null) {
-            imageService.saveImage(newAds.getAuthorId().getId(), image);
+            imageService.saveImage(newAds.getId(), image);
             log.info("Photo has been saved");
         } else {
             throw new IOException("Photo not found");
@@ -69,18 +71,30 @@ public class AdsServiceImpl implements AdsService {
 
     @Override
     public boolean removeAd(Integer id) {
-        log.info("Delete ads: " + id);
-        if (!adsRepository.existsById(id)) {
+        Optional<Ads> adOptional = adsRepository.findById(id);
+        log.info("Delete ads: " + adOptional);
+        if (adOptional.isEmpty()) {
+            log.info("Ad not found");
             return false;
         }
+
+        Ads adsToDelete = adsRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("Ads not found"));
+        String filePath = adsToDelete.getImage().getFilePath();
+        File fileToDelete = new File(filePath);
+        if (fileToDelete.exists()) {
+            fileToDelete.delete();
+        }
+
         adsRepository.deleteById(id);
         return true;
     }
 
     @Override
     public AdsDto updateAds(AdsDto adsDto, Integer id) {
-        Ads ads = adsMapper.adsDtoToAds(adsDto);
+        Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         log.info("Update ads: " + ads);
+        adsMapper.updateAds(adsDto, ads);
         return adsMapper.adsToAdsDto(adsRepository.save(ads));
     }
 
@@ -89,7 +103,7 @@ public class AdsServiceImpl implements AdsService {
         log.info("Get ads: " + email);
         User author = userRepository.findUserByUsername(email);
         Collection<Ads> ads = adsRepository.findAllByAuthorId(author);
-        Collection <AdsDto> adsDto = adsMapper.adsCollectionToAdsDto(ads);
+        Collection<AdsDto> adsDto = adsMapper.adsCollectionToAdsDto(ads);
         log.info("Found ads: " + adsDto);
         return adsDto;
     }

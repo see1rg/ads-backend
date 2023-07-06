@@ -13,9 +13,7 @@ public interface UserService {
 
     Optional<UserDto> getUser(String name);
 
-
     RegisterReq update(RegisterReq user, Principal principal);
-    RegisterReq update(RegisterReq user);
 
     RegisterReq save(RegisterReq newUser);
 }

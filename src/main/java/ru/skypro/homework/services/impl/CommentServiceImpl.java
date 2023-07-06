@@ -13,6 +13,8 @@ import ru.skypro.homework.repositories.CommentRepository;
 import ru.skypro.homework.repositories.UserRepository;
 import ru.skypro.homework.services.CommentService;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -27,6 +29,11 @@ public class CommentServiceImpl implements CommentService {
     private final CommentMapper commentMapper;
 
     @Override
+    public Comment findCommentById(Integer id) {
+        return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+    }
+
+    @Override
     public Collection<CommentDto> getComments(Integer id) {
         Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
         log.info("Get all comments for ad: " + id);
@@ -38,6 +45,7 @@ public class CommentServiceImpl implements CommentService {
         if (!adsRepository.existsById(id)) {
             throw new IllegalArgumentException("Ad not found");
         }
+        commentDto.setCreatedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli());
         Comment newComment = commentMapper.commentDtoToComment(commentDto);
         log.info("Save comment: " + newComment);
         newComment.setAds(adsRepository.findById(id).orElseThrow(()
@@ -49,7 +57,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public boolean deleteComment(Integer adId, Integer id) {
-        if (!adsRepository.existsById(adId)) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+        if (commentOptional.isEmpty()) {
+            log.info("Comment not found");
             return false;
         }
         log.info("Delete comment: " + id);

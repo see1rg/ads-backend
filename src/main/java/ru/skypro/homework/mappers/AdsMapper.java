@@ -1,21 +1,14 @@
 package ru.skypro.homework.mappers;
 
-import org.mapstruct.InheritInverseConfiguration;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import ru.skypro.homework.dtos.AdsDto;
 import ru.skypro.homework.dtos.AdsDtoFull;
 import ru.skypro.homework.models.Ads;
-import ru.skypro.homework.models.Image;
-import ru.skypro.homework.models.User;
-import ru.skypro.homework.repositories.ImageRepository;
 
 import java.util.Collection;
-import java.util.List;
 
 @Mapper(componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AdsMapper {
 
     @Mapping(source = "id", target = "pk")
@@ -26,7 +19,7 @@ public interface AdsMapper {
     @Mapping(target = "authorFirstName", source = "authorId.firstName")
     @Mapping(target = "authorLastName", source = "authorId.lastName")
     @Mapping(target = "email", source = "authorId.email")
-    @Mapping(target = "image", expression="java(getImage(ads))")
+    @Mapping(target = "image", expression = "java(getImage(ads))")
     @Mapping(target = "phone", source = "authorId.phone")
     @Mapping(target = "pk", source = "id")
     AdsDtoFull adsToAdsDtoFull(Ads ads);
@@ -35,13 +28,17 @@ public interface AdsMapper {
         if (ads.getImage() == null) {
             return null;
         }
-        return "/ads/" + ads.getId() + "/getImage";
+        return "/ads/" + ads.getId() + "/image";
     }
 
     @InheritInverseConfiguration
     @Mapping(target = "image", ignore = true)
-    @Mapping(target = "authorId", ignore = true)
-    @Mapping(target = "description", ignore = true)
+    @Mapping(target = "authorId.id", source = "author")
+    @Mapping(target = "comments", ignore = true)
     Ads adsDtoToAds(AdsDto adsDto);
+
+    @Mapping(target = "image", expression = "java(ads.getImage())")
+    void updateAds(AdsDto adsDto, @MappingTarget Ads ads);
+
     Collection<AdsDto> adsCollectionToAdsDto(Collection<Ads> adsCollection);
 }
