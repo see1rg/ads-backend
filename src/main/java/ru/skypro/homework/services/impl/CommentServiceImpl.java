@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.skypro.homework.dtos.CommentDto;
+import ru.skypro.homework.dtos.ResponseWrapperComment;
 import ru.skypro.homework.mappers.CommentMapper;
 import ru.skypro.homework.models.Comment;
 import ru.skypro.homework.repositories.AdsRepository;
@@ -15,7 +16,7 @@ import ru.skypro.homework.services.CommentService;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,14 +31,17 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment findCommentById(Integer id) {
+        log.info("Find comment by id: " + id);
         return commentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Comment not found"));
     }
 
     @Override
-    public Collection<CommentDto> getComments(Integer id) {
-        Collection<Comment> comments = commentRepository.findCommentsByAds_Id(id);
+    public ResponseWrapperComment getComments(Integer id) {
         log.info("Get all comments for ad: " + id);
-        return commentMapper.commentCollectionToCommentDto(comments);
+        List<Comment> comments = commentRepository.findCommentsByAds_Id(id);
+        ResponseWrapperComment responseWrapperComment = new ResponseWrapperComment();
+        responseWrapperComment.setResults(commentMapper.toCommentsListDto(comments));
+        return responseWrapperComment;
     }
 
     @Override
@@ -68,13 +72,16 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) {
+    public CommentDto updateComment(Integer adId, CommentDto commentDto, Integer commentId, Authentication authentication) {
+        log.info("Update comment: " + commentDto);
         if (!adsRepository.existsById(adId)) {
             throw new IllegalArgumentException("Ad not found");
         }
-        Comment comment = commentMapper.commentDtoToComment(commentDto);
-        comment.setAuthorId(userRepository.findUserByUsername(authentication.getName()));
-        log.info("Update comment: " + comment);
-        return commentMapper.commentToCommentDto(commentRepository.save(comment));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new IllegalArgumentException("Comment not found"));
+        comment.setText(commentDto.getText());
+        commentRepository.save(comment);
+        return commentMapper.commentToCommentDto(comment);
     }
+
 }

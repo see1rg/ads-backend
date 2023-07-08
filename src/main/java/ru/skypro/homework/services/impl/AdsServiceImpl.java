@@ -93,9 +93,9 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDto updateAds(AdsDto adsDto, Integer id) {
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
-        Ads adsToUpdate = adsMapper.adsDtoToAds(adsDto);
         log.info("Update ads: " + ads);
-        return adsMapper.adsToAdsDto(adsRepository.save(adsToUpdate));
+        adsMapper.updateAds(adsDto, ads);
+        return adsMapper.adsToAdsDto(adsRepository.save(ads));
     }
 
     @Override
