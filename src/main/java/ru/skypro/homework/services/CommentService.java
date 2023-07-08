@@ -17,5 +17,5 @@ public interface CommentService {
 
     boolean deleteComment(Integer adId, Integer id);
 
-    CommentDto updateComment(Integer adId, CommentDto commentDto, Integer id, Authentication authentication) throws IOException;
+    CommentDto updateComment(Integer adId, CommentDto commentDto, Integer commentId, Authentication authentication) throws IOException;
 }
