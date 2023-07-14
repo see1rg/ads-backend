@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.skypro.homework.models.Ads;
 import ru.skypro.homework.models.Image;
@@ -89,8 +90,8 @@ public class ImageService {
     public String uploadImage(String name, MultipartFile file) {
         log.debug("Was invoked method to upload image");
 
-        String extension = Optional.ofNullable(file.getOriginalFilename()).
-                map(s -> s.substring(file.getOriginalFilename().lastIndexOf("."))).
+
+        String extension = Optional.ofNullable(StringUtils.getFilenameExtension(file.getOriginalFilename())).
                 orElse(" ");
 
         Path filePath = Path.of(imageDir, name + extension);
