@@ -22,3 +22,8 @@
 * Показывать и сохранять изображения объявлений, аватарки пользователей
 
 
+### Инструкция по запуску
+* Клонировать проект в среду разработки
+* Скопировать данные из файла application.origin в application.properties и внести значения для datasource.url, datasource.username, datasource.password
+* Запустить Docker образ (docker run --rm -p 3000:3000 ghcr.io/bizinmitya/front-react-avito:v1.16) или использовать Postman
+* Запустить main метод в классе DiplomaAvitoApplication
