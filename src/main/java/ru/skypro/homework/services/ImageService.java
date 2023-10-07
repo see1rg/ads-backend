@@ -12,12 +12,10 @@ import ru.skypro.homework.repositories.AdsRepository;
 import ru.skypro.homework.repositories.ImageRepository;
 import ru.skypro.homework.repositories.UserRepository;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,7 +31,7 @@ public class ImageService {
     @Value("${Image.dir.path}")
     private String imageDir;
 
-    public byte[] saveImage(Integer id, MultipartFile file) throws IOException {
+    public void saveImage(Integer id, MultipartFile file) throws IOException {
         log.info("Was invoked method to upload photo to ads with id {}", id);
         Ads ads = adsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Ads not found"));
         if (isEmpty(file)) {
@@ -47,34 +45,44 @@ public class ImageService {
             imageToSave = new Image();
         }
         imageToSave.setAds(ads);
-        return saveImageAndGetBytes(file, imageToSave);
+        saveImageAndGetBytes(file, imageToSave);
     }
 
-    public byte[] saveAvatar(String email, MultipartFile file) throws IOException {
+    public void saveAvatar(String email, MultipartFile file) throws IOException {
         Integer id = userRepository.findUserByUsername(email).getId();
         log.info("Was invoked method to upload photo to user with id {}", id);
+
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
-        if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("User not found");
-        }
 
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Image imageToSave = imageRepository.findByUser(user);
         if (imageToSave == null) {
             imageToSave = new Image();
         } else {
             String filePath = user.getAvatar().getFilePath();
-            File fileToDelete = new File(filePath);
-            if (fileToDelete.exists()) {
-                fileToDelete.delete();
+            Path fileToDelete = Paths.get(filePath);
+            if (Files.exists(fileToDelete)) {
+                try {
+                    Files.delete(fileToDelete);
+                } catch (IOException e) {
+                    throw new IOException("Failed to delete existing file", e);
+                }
             }
         }
+
         imageToSave.setUser(user);
-        return saveImageAndGetBytes(file, imageToSave);
+
+        byte[] savedImageBytes = saveImageAndGetBytes(file, imageToSave);
+        if (savedImageBytes == null || savedImageBytes.length == 0) {
+            throw new IOException("Failed to save image");
+        }
+
     }
+
 
     private byte[] saveImageAndGetBytes(MultipartFile file, Image imageToSave) throws IOException {
         imageToSave.setPreview(file.getBytes());
@@ -107,23 +115,38 @@ public class ImageService {
 
     public byte[] getAvatar(int id) throws IOException {
         log.info("Was invoked method to get avatar from user with id {}", id);
-        Optional<User> user = userRepository.findById(id);
-        if (isEmpty(user)) {
-            throw new IllegalArgumentException("User not found");
+        Optional<User> userOptional = userRepository.findById(id);
+
+        User user = userOptional.orElseThrow(() -> new IllegalArgumentException("User not found"));
+        Image avatar = user.getAvatar();
+
+        if (avatar == null || avatar.getFilePath() == null) {
+            return new byte[0];
         }
-        Image filePath = user.get().getAvatar();
-        if (filePath == null) {
-            return null;
+
+        try {
+            return Files.readAllBytes(Paths.get(avatar.getFilePath()));
+        } catch (IOException e) {
+            throw new IOException("Failed to read avatar image", e);
         }
-        return Files.readAllBytes(Paths.get(Objects.requireNonNull(user.get().getAvatar().getFilePath())));
     }
 
-    public byte[] getImage(int id) throws IOException { //for AdsMapper
+    public byte[] getImage(int id) throws IOException {
         log.info("Was invoked method to get image from ads with id {}", id);
-        Optional<Ads> ads = adsRepository.findById(id);
-        if (isEmpty(ads)) {
-            throw new IllegalArgumentException("Ads not found");
+        Optional<Ads> adsOptional = adsRepository.findById(id);
+
+        Ads ads = adsOptional.orElseThrow(() -> new IllegalArgumentException("Ads not found"));
+        Image image = ads.getImage();
+
+        if (image == null || image.getFilePath() == null) {
+            return new byte[0];
         }
-        return Files.readAllBytes(Paths.get(Objects.requireNonNull(ads.get().getImage().getFilePath())));
+
+        try {
+            return Files.readAllBytes(Paths.get(image.getFilePath()));
+        } catch (IOException e) {
+            throw new IOException("Failed to read image", e);
+        }
     }
+
 }
