@@ -13,7 +13,7 @@ import java.util.Optional;
 @Component
 public class MyUserDetails implements UserDetails {
 
-    private SecurityUserDto user;
+    private transient SecurityUserDto user;
 
     public void setUserDto(SecurityUserDto userDto) {
         this.user = userDto;

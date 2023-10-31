@@ -27,13 +27,9 @@ public interface UserMapper {
     User userDtoToUser(UserDto userDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "role", source = "registerReq.role")
-    @Mapping(target = "email", source = "registerReq.username")
-    @Mapping(target = "firstName", source = "registerReq.firstName")
-    @Mapping(target = "lastName", source = "registerReq.lastName")
-    @Mapping(target = "phone", source = "registerReq.phone")
-    @Mapping(target = "password",source = "registerReq.password")
-    User updateUserFromRegisterReq(RegisterReq registerReq, User user);
+    @Mapping(target = "avatar", ignore = true)
+    @Mapping(target = "email", source = "username")
+    User updateUserFromRegisterReq(RegisterReq registerReq);
 
     SecurityUserDto toSecurityDto(User user);
 

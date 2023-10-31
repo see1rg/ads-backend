@@ -31,25 +31,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public RegisterReq update(RegisterReq user, Principal principal) {
+    public RegisterReq update(RegisterReq reqUser, Principal principal) {
         log.info("Update user: " + principal);
         User optionalUser = userRepository.findUserByUsername(principal.getName());
         if (optionalUser == null) {
             throw new IllegalArgumentException("User not found");
         }
-        User updateUser = userMapper.updateUserFromRegisterReq(user, optionalUser);
-        updateUser.setRole(optionalUser.getRole());
+        User updateUser = userMapper.updateUserFromRegisterReq(reqUser);
         updateUser.setId(optionalUser.getId());
         updateUser.setEmail(optionalUser.getEmail());
         userRepository.save(updateUser);
-        return user;
+        return reqUser;
     }
 
     @Override
     public RegisterReq save(RegisterReq user) {
         log.info("Save user: " + user);
-        User newUser = new User();
-        newUser = userMapper.updateUserFromRegisterReq(user, newUser);
+        User newUser = userMapper.updateUserFromRegisterReq(user);
         userRepository.save(newUser);
         return user;
     }

@@ -44,8 +44,7 @@ CREATE TABLE comments (
                           text VARCHAR(255) NOT NULL,
                           ads_id BIGINT NOT NULL,
                           author_id BIGINT NOT NULL,
-                          FOREIGN KEY (ads_id) REFERENCES ads(id),
-                          FOREIGN KEY (author_id) REFERENCES users_profiles(id),
+
                           ad_id INTEGER REFERENCES ads(id) ON DELETE CASCADE
 );
 
